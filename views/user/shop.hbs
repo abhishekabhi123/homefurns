@@ -1,0 +1,43 @@
+{{> header}}
+
+<div
+  class='container-fluid d-flex justify-content-center'
+  style='height: 100vh;'
+>
+  <div class='col-md-2 bg-danger'></div>
+  <div class='col-md-10'>
+    <div class='container'>
+      <div class=' row g-3'>
+        {{#each products}}
+          <div class='p-2 col-sm-3 my-2 ml-3'>
+            <div class='card'>
+              <a href="/product/{{this._id}}">
+              <img
+                class='card-img-top'
+                
+                src="product-images/{{this._id}}.jpg"
+                {{!-- src = "product-images\62ffcc2fd48521c3d3f58734.jpg" --}}
+                width="200px"
+                height="200px"
+                style="overflow: hidden"
+                alt='Card image cap'
+              />
+              </a>
+              <div
+                class='rounded-circle position-absolute d-flex justify-content-center'
+              >
+                <p class='m-auto'>75%</p>
+              </div>
+              <div class='card-body'>
+                <h5 class='card-title'>{{this.name}}</h5>
+                <p class='card-text'>{{this.price}}</p>
+                <div class="row">
+                  <a href='#' class='btn btn-primary w-50 '>Add to cart</a>
+                  <a href='#' class='btn btn-primary w-50 '>Buy now</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        {{/each}}
+  </div>
+</div>

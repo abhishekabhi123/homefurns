@@ -1,0 +1,33 @@
+*{
+    font-family: 'Sofia Pro';
+}
+
+.navbar{
+    position: relative;
+}
+.buttonOrange{
+    position: absolute;
+    background-color: #E9672B ;
+    border-radius: 40px;
+    right: 4rem ;
+    color: #fff;
+}
+
+.dg{
+    position: relative;
+}
+.b-close{
+    position: absolute;
+    left: 94%;
+    top: 2px;
+}
+.create-button{
+    
+    /* position: absolute; */
+    background-color: #E9672B ;
+    border-radius: 40px;
+    /* right: 4rem ; */
+    /* color: #fff; */
+    border: none;
+    
+}

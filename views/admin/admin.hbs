@@ -1,0 +1,147 @@
+
+  <link rel='stylesheet' href='/stylesheets/styles.css' />
+
+
+  <section id='menu'>
+    <div class='logo'>
+      <img src='/images/home_logo-removebg-preview.png' alt='logo' />
+      <h2>HOME</h2>
+    </div>
+    <div class='items'>
+      <li><i class='fa-solid fa-chart-pie'></i><a
+          href='/dashboard'
+        >Dashboard</a></li>
+      <li><i class='fa-solid fa-user'></i><a href='/admin'>Admin account</a></li>
+      <li><i class='fa-solid fa-users'></i><a href='/admin/users'>Edit users</a></li>
+      <li>
+        <i class='fa-solid fa-cart-arrow-down'></i><a
+          href='/admin/products'
+        >Edit produts</a>
+      </li>
+      <li>
+        <i class='fa-solid fa-cart-arrow-down'></i><a
+          href='/admin/categories'
+        >Categories</a>
+      </li>
+    </div>
+  </section>
+  <section id='interface'>
+    <div class='navigation'>
+      <div class='n1'>
+        <div>
+          <i id='  </script>
+' class='fas fa-bars'></i>
+        </div>
+        <div class='search'>
+          <i class='fa fa-search'></i>
+          <input type='text' placeholder='Search' />
+        </div>
+      </div>
+      <div class='profile'>
+        <i class='fa fa-bell'></i>
+        <a href='/admin/logout'>
+          <img
+            src='/images/PinClipart.com_playing-video-games-black_1486972.png'
+          /></a>
+      </div>
+    </div>
+    <h3 class='i-name'>Dashboard</h3>
+    <div class='values'>
+      <div class='val-box'>
+        <i class='fa fa-users'></i>
+        <div>
+          <h3>8,267</h3>
+          <span>New users</span>
+        </div>
+      </div>
+      <div class='val-box'>
+        <i class='fa fa-shopping-cart'></i>
+        <div>
+          <h3>200,521</h3>
+          <span>Total Orders</span>
+        </div>
+      </div>
+      <div class='val-box'>
+        <i class='fa-solid fa-hashtag'></i>
+        <div>
+          <h3>215,542</h3>
+          <span>Products Sell</span>
+        </div>
+      </div>
+      <div class='val-box'>
+        <i class='fa fa-dollar-sign'></i>
+        <div>
+          <h3>$677.89</h3>
+          <span>This month</span>
+        </div>
+      </div>
+    </div>
+    <dir class='board'>
+      <table width='100%'>
+        <thead>
+          <tr>
+            <td>Name</td>
+            <td>Title</td>
+            <td>Status</td>
+            <td>Role</td>
+            <td>options</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class='people'>
+              <img
+                src='/images/PinClipart.com_playing-video-games-black_1486972.png'
+                alt=''
+              />
+              <div class='people-de'>
+                <h5>Jhon</h5>
+                <p>jhon@email.com</p>
+              </div>
+            </td>
+            <td class='people-des'>
+              <h5>software</h5>
+              <p>web dev</p>
+            </td>
+            <td class='active'>
+              <p>Active</p>
+            </td>
+            <td class='role'>
+              <p>owner</p>
+            </td>
+            <td class='edit'>
+              <a href='#'>Edit</a>
+            </td>
+          </tr>
+          <tr>
+            <td class='people'>
+              <img
+                src='/images/PinClipart.com_playing-video-games-black_1486972.png'
+                alt=''
+              />
+              <div class='people-de'>
+                <h5>Don</h5>
+                <p>don@email.com</p>
+              </div>
+            </td>
+            <td class='people-des'>
+              <h5>Banking</h5>
+              <p>Manager</p>
+            </td>
+            <td class='active'>
+              <p>Active</p>
+            </td>
+            <td class='role'>
+              <p>owner</p>
+            </td>
+            <td class='edit'>
+              <a href='#'>Edit</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </dir>
+  </section>
+  <script>
+    $('#menu-btn').click(function () { $('#menu').toggleClass("active") })
+  </script>

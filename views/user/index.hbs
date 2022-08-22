@@ -1,0 +1,153 @@
+
+{{>header}}
+<div class='chairimage'>
+
+  <span class='awsome'>Awsome furnitures</span>
+  <span class='furniture'>awsome furnitures</span>
+</div>
+<button class='butn'>
+  Take This Look
+</button>
+<div class='icon-div'>
+  <img src='/images/Group 97.svg' alt='' class='img-fluid image1' />
+  <img src='/images/bedroom.svg' alt='' class='img-fluid image2' />
+  <img src='/images/kitchen.svg' alt='' class='img-fluid image3' />
+  <img src='/images/bathroom.svg' alt='' class='img-fluid image4' />
+  <img src='/images/workspace.svg' alt='' class='img-fluid image5' />
+  <img src='/images/accessories.svg' alt='' class='img-fluid image6' />
+</div>
+
+<section class='offers'>
+  <div class='grid-container'>
+    <div class='offer-img'>
+    </div>
+    <div class='offer-chair'>
+    </div>
+    <div class='inspiration'>
+      Find inspiration. Find profesionals
+    </div>
+  </div>
+</section>
+<div class='container'>
+  <div class='cards row g-3'>
+    <div class='my-4 best'>Best Selling</div>
+    {{#each products}}
+      <div class='p-2 col-sm-3 ml-3'>
+        <div class='card'>
+          <img class='card-img-top' src={{this.image}} alt='Card image cap' />
+          <div
+            class='rounded-circle position-absolute d-flex justify-content-center'
+          >
+            <p class='m-auto'>75%</p>
+          </div>
+          <div class='card-body'>
+            <h5 class='card-title'>{{this.name}}</h5>
+            <p class='card-text'>{{this.price}}</p>
+            <a href='#' class='btn btn-primary'>Buy now</a>
+          </div>
+        </div>
+      </div>
+    {{/each}}
+  </div>
+</div>
+<div class='explore-div container'>
+  <div class='explore-text'>
+    Explore Our Products
+  </div>
+  <div class='row'>
+    {{#each most}}
+      <div class='card exp-card col-sm-3'>
+        <img src='{{this.image}}' class='card-img-top' alt='...' />
+        <div class='card-body'>
+          <h5 class='card-title'>{{this.name}}</h5>
+          <p class='card-text'>{{this.price}}</p>
+          <a href='#' class='btn btn-primary'>Go somewhere</a>
+        </div>
+      </div>
+    {{/each}}
+  </div>
+</div>
+<div class='holiday-sales'>
+  <img src='/images/slide.svg' alt='' class='holiday-image img-fluid' />
+  <button class='buts'>
+    Explore Now
+  </button>
+</div>
+<div class='explore-div container'>
+  <div class='explore-text'>
+    Top Trending products
+  </div>
+  <div class='row'>
+    {{#each most}}
+      <div class='card exp-card col-sm-3'>
+        <img src='{{this.image}}' class='card-img-top' alt='...' />
+        <div class='card-body'>
+          <h5 class='card-title'>{{this.name}}</h5>
+          <p class='card-text'>{{this.price}}</p>
+          <a href='#' class='btn btn-primary'>Go somewhere</a>
+        </div>
+      </div>
+    {{/each}}
+  </div>
+</div>
+<div class='ad'>
+  <div class='ad1'>
+    <img src='/images/chair1.svg' alt='' class='image-div1 img-fluid' />
+    <p class='armchair'>Accent Arm Chair</p>
+  </div>
+  <div class='ad2'>
+    <img src='/images/chair2.svg' alt='' class='image-div2 img-fluid' />
+    <p class='ceramic'>
+      Rivet Geometric Ceramic Planter
+    </p>
+  </div>
+  <div class='ad3'>
+    <img src='/images/chair3.svg' alt='' class='image-div3 img-fluid' />
+    <p class='japanese'>
+      Ceramic Japanese Lamp
+    </p>
+  </div>
+</div>
+<div class='explore-div container'>
+  <div class='explore-text'>
+    New arrival
+  </div>
+  <div class='row'>
+    {{#each most}}
+      <div class='card exp-card col-sm-3'>
+        <img src='{{this.image}}' class='card-img-top' alt='...' />
+        <div class='card-body'>
+          <h5 class='card-title'>{{this.name}}</h5>
+          <p class='card-text'>{{this.price}}</p>
+          <a href='#' class='btn btn-primary'>Go somewhere</a>
+        </div>
+      </div>
+    {{/each}}
+  </div>
+</div>
+
+<div class='instagram'>
+  <p class='follow'>Follow us on instagram</p>
+  <div class='insta-div'>
+    <div class='insta1'>
+      <img src='/images/insta1.svg' alt='' />
+    </div>
+    <div class='insta2'>
+      <img src='/images/insta2.svg' alt='' />
+    </div>
+    <div class='insta3'>
+      <img src='/images/insta3.svg' alt='' />
+    </div>
+    <div class='insta4'>
+      <img src='/images/insta4.svg' alt='' />
+    </div>
+    <div class='insta5'>
+      <img src='/images/insta5.svg' alt='' />
+    </div>
+  </div>
+</div>
+
+<div class='logos'>
+  <img src='/images/logo.svg' alt='' class='logo-div img-fluid' />
+</div>
+{{> footer}}
