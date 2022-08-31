@@ -14,16 +14,19 @@
           <th class="" scope="col">Title</th>
           <th class="" scope="col">Description</th>
           <th class="" scope="col">Price</th>
+          <th class="" scope="col">Category</th>
           <th class="" scope="col">Image</th>
+          <th class="" scope="col">Options</th>
         </tr>
       </thead>
       <tbody>
         {{#each products}}
           <tr>
-            <th class="" scope="row">{{this.id}}</th>
+            <th class="" scope="row">{{@index}}</th>
             <td class="">{{this.name}}</td>
             <td class="">{{this.description}}</td>
             <td class="">{{this.price}}</td>
+            <td class="">{{this.category}}</td>
             <td class=""><img
                 src="/product-images/{{this._id}}.jpg"
                 width="50px"
@@ -31,8 +34,6 @@
               /></td>
             <td class="">
               <a class="btn btn-primary" href="/admin/edit-product/{{this._id}}">Edit</a>
-            </td>
-            <td class=""> 
               <a
                 class="btn btn-danger"
                 href="/admin/delete-product/{{this._id}}"

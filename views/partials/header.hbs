@@ -21,13 +21,13 @@
           <a class='nav-link active home' aria-current='page' href='/'>Home</a>
         </li>
         <li class='nav-item'>
-          <a class='nav-link' href='/shop'>Shop</a>
+          <a class='nav-link text-dark' href='/shop'>Shop</a>
         </li>
         <li class='nav-item'>
-          <a class='nav-link' href='#'>Contact</a>
+          <a class='nav-link text-dark' href='/#'>Contact</a>
         </li>
         <li class='nav-item'>
-          <a class='nav-link' href='#'>About </a>
+          <a class='nav-link text-dark' href='#'>About </a>
         </li>
         <div class='icons'>
           <img
@@ -41,14 +41,16 @@
             class='nav-logo'
           />
           <img src='/images/user-svgrepo-com.svg' alt='user' class='nav-logo' />
-          <img src='/images/cart-svgrepo-com.svg' alt='user' class='nav-logo' />
+          <a href="/cart"><img src='/images/cart-svgrepo-com.svg' alt='user' class='nav-logo' /></a>
 
         </div>
       </ul>
     </div>
   </div>
+
   {{#if user}}
-      <a href="/logout" class="btn buttonOrange">Logout</a>
+  {{user.username}}
+    <a href='/logout' class='btn buttonOrange'>Logout</a>
   {{else}}
     <button
       type='button '
@@ -56,7 +58,7 @@
       data-bs-toggle='modal'
       data-bs-target='#login'
     >
-      Sign In
+      Log In
     </button>
   {{/if}}
 </nav>
@@ -92,7 +94,10 @@
               />
               <h5 class='mx-3'>Welcome back</h5>
             </div>
-            <form action='/login' method='post'>
+            <form action='/login' method='post' class="LIF">
+            {{#if loginErr}} 
+            <p>Invalid credintials</p>
+            {{/if}}
               <div class='form-outline mb-4'>
                 <label class='form-label' for='form2Example2'>Your Email</label>
                 <input
@@ -111,12 +116,23 @@
                   class='form-control rounded-pill'
                 />
               </div>
+
               <button
                 type='submit'
                 class='text-white py-2 mb-4 col-sm-12 rounded-pill create-button'
               >
-                Sign In
+                Log In
               </button>
+
+              <span class='or mb-3'>OR</span>
+              <br />
+              <div
+                class='container col-sm-12 mt-3 d-flex justify-content-center'
+              >
+                <a class='otp-btn btn m-3 mx-auto' href='/get-otp'>Login with
+                  OTP</a>
+
+              </div>
 
               <div class='container col-sm-12 d-flex justify-content-center'>
                 <p>New Member
@@ -162,7 +178,7 @@
               />
               <h5 class='mx-3'>Hello,Friend!!!</h5>
             </div>
-            <form action='/signup' method='post'>
+            <form action='/signup' method='post' class="SUF">
               <!-- Email input -->
               <div class='form-outline mb-4'>
                 <label class='form-label' for='form2Example1'>Username</label>
@@ -179,6 +195,15 @@
                 <input
                   name='email'
                   type='email'
+                  id='form2Example2'
+                  class='form-control rounded-pill'
+                />
+              </div>
+              <div class='form-outline mb-4'>
+                <label class='form-label' for='form2Example2'>Phone number</label>
+                <input
+                  name='phone'
+                  type='text'
                   id='form2Example2'
                   class='form-control rounded-pill'
                 />
@@ -205,7 +230,10 @@
               </button>
 
               <div class='container col-sm-12 d-flex justify-content-center'>
-                <p>Already a member? <a href=''>Sign In</a></p>
+                <p>Already a member?  <a
+                    href=''
+                    data-bs-toggle='modal'
+                    data-bs-target='#login'>Sign In</a></p>
               </div>
             </form>
           </div>
@@ -214,3 +242,6 @@
     </div>
   </div>
 </div>
+
+<script src="/javascripts/validation.js"></script> 
+<script src="/javascripts/main.js"></script>

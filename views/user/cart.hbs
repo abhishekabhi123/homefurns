@@ -1,0 +1,74 @@
+<link rel="stylesheet" href="/stylesheets/cart.css">
+{{> header}}
+<span class="kart">Shoping Cart</span>
+{{#each data}}
+<div class="border border-dark m-5">
+  <p>{{this.cartItems.quantity}}</p>
+  <p>{{this.cart._id}}</p>  
+  <p>{{this.cart.name}}</p>
+  <p>{{this.cart.description}}</p>
+  <p>{{this.cart.price}}</p>
+  <p>{{this.cart.category }}</p>
+  <h1>{{this.cart.quantity}}</h1>
+  <button type="button" id="{{this.cart._id}}{{this._id}}" onclick='changeQuantity("{{this._id}}","{{this.cart._id}}","{{this.userId}}","-1")'>-</button>
+  <span id="{{this.cart._id}}">{{this.cartItems.quantity}}</span>
+  <button type="button" onclick='changeQuantity("{{this._id}}","{{this.cart._id}}","{{this.userId}}","1")' >+</button>
+  <button type="button" onclick='removeFromCart("{{this._id}}","{{this.cart._id}}")' >Remove</button>
+  
+</div>
+{{/each}}
+<h1>Total Amount is : <span id="total" >{{total}}</span></h1>
+{{> footer}}
+<script>
+  function changeQuantity(cartId, productId,userId, count) {
+    let val = document.getElementById(productId).innerHTML
+    val = parseInt(val)
+    
+    console.log("changeQuantity")
+    count = Number(count);
+    $.ajax({
+      url:"/changeQuantity",
+      data: {
+        cart: cartId,
+        user: userId,
+        product: productId,
+        count: count
+      },
+      method: "POST",
+      success: function (data) {
+        console.log(data)
+      console.log(data.total.total)
+      $("#total").text(data.total)
+        val = val + count;
+        document.getElementById(productId).innerHTML = val;
+            console.log(productId, val)
+        if(val <= 1) {
+      //document.getElementById(`${productId}${cartId}`).disabled = true;
+      $(`#${productId}${cartId}`).attr("disabled", true);
+    } else {
+      $(`#${productId}${cartId}`).attr("disabled", false);
+    }
+      },
+      error: function (err) {
+
+      }
+    })
+    
+  }
+  function removeFromCart(cartId, productId) {
+      $.ajax({
+      url:"/removeFromCart",
+      data: {
+        cart: cartId,
+        product: productId,
+      },
+      method: "POST",
+      success: function (data) {
+        window.location.reload();
+      },
+      error: function (err) {
+
+      }
+    })
+    }
+</script

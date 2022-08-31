@@ -1,0 +1,63 @@
+<form id="checkout-form" method="post">
+  <div class="mb-3">
+    <label class="form-label">Name</label>
+    <input type="text" name="name" class="form-control" >
+    <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+  </div>
+  <div class="mb-3">
+    <label class="fpostorm-label">Address</label>
+    <input type="text" name="address" class="form-control" >
+    <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Phone</label>
+    <input type="number" name="phone" class="form-control" >
+  </div>
+  <div class="form-check">
+  <input class="form-check-input" name="paymentMethod" type="radio" value="online" id="flexRadioDefault1">
+  <label class="form-check-label" for="flexRadioDefault1">
+    Online Payment
+  </label>
+</div>
+<div class="form-check">
+  <input class="form-check-input" name="paymentMethod" type="radio" value="cod" id="flexRadioDefault2" checked>
+  <label class="form-check-label" for="flexRadioDefault2">
+    Cash on Delivery
+  </label>
+</div>
+<input type="text" name="userId" value="{{user._id}}" hidden>
+  <h1>Total amount is {{total}}</h1>
+  <button type="submit" class="btn btn-primary">Checkout</button>
+</form>
+
+
+<script>
+  $('#checkout-form').submit(function (e) {
+         e.preventDefault();
+         console.log('submit')
+         console.log($('#checkout-form').serialize())
+             $.ajax({
+                 url: '/checkout',
+                 type: 'POST',
+                 data: $('#checkout-form').serialize(),
+                 success: function (data) {
+                    console.log('success')
+                     alert(data)
+                 },error: function (err) {
+                    console.log(err);
+                 }
+             })
+     })
+</script>
+{{!-- 
+if (data.error) {
+                         location.href = `/place-order-validationError/${data.total}/${data.error}`;
+                     }
+                     else if (data.codSuccess) {
+                         location.href = '/order-success';
+                     }
+                     else {
+                         razorpayPayment(data);
+                     }
+<h1>Total amount is : {{data.total}}</h1>
+--}}

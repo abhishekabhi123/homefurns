@@ -12,19 +12,34 @@ const {
   addUser,
   updateUser,
   blockUser,
+  addCategory,
+  getAllCategories,
+  deleteCategory,
+  editCategory,
+  getCategory,
 } = require('../helpers/admin-helper');
 var router = express.Router();
 
 router.get('/login', function (req, res, next) {
-  req.session.adminLoggedIn
-    ? res.redirect('/admin')
-    : res.render('admin/login');
+ if(req.session.adminLoggedIn) {
+     res.redirect('/admin')
+ } else {
+    res.render('admin/login',{"loginErr":req.session.loginErr});
+    req.session.loginErr = false;
+ }
 });
 
+
 router.post('/login', (req, res) => {
-  doLogin(req.body).then(() => {
-    req.session.adminLoggedIn = true;
+  doLogin(req.body).then((state) => {
+    if (state){
+      req.session.adminLoggedIn = true;
     res.redirect('/admin');
+    }else{
+      req.session.loginErr = true;
+      res.redirect('/admin/login');
+      
+    }
   });
 });
 
@@ -97,6 +112,7 @@ router.get('/add-product', (req, res) => {
 router.post('/add-product', (req, res) => {
   const image = req.files.image;
   addProduct(req.body).then((insertId) => {
+    console.log(insertId)
     image.mv(`./public/product-images/${insertId}.jpg`, (err, done) => {
       if (!err) res.render('admin/add-product');
       else console.log(err);
@@ -120,11 +136,50 @@ router.get('/edit-product/:id', (req, res) => {
 router.post('/edit-product/:id', (req, res) => {
   updateProductDetails(req.params.id, req.body).then(() => {
     res.redirect('/admin/products');
+    
+    image.mv(`./public/product-images/${insertId}.jpg`, (err, done) => {
+      if (!err) res.render('admin/add-product');
+      else console.log(err);
+    });
   });
 });
 
-router.get('/categories', (req, res) => {
 
-   
-})
+// ===================CATEGORIES=====================
+
+router.get('/categories', (req, res) => {
+  getAllCategories().then((categories) => {
+    res.render('admin/categories', { categories });
+  });
+});
+
+router.get('/add-category', (req, res) => {
+  getAllProducts().then((products) => {
+    res.render('admin/add-category', { products });
+  });
+});
+router.post('/add-category', (req, res) => {
+  addCategory(req.body).then((status) => {
+    console.log(status);
+    res.redirect('/admin/categories');
+  });
+});
+
+router.get('/edit-category/:id', (req, res) => {
+  getCategory(req.params.id).then((category) => {
+    res.render('admin/edit-category', { category: category });
+  });
+});
+router.post('/edit-category/:id', (req, res) => {
+  editCategory(req.params.id, req.body).then((status) => {
+    res.redirect('/admin/categories');
+  });
+});
+
+router.get('/delete-category/:id', (req, res) => {
+  deleteCategory(req.params.id).then((status) => {
+    res.redirect('/admin/categories');
+  });
+});
+
 module.exports = router;

@@ -1,33 +1,56 @@
-*{
-    font-family: 'Sofia Pro';
+* {
+  font-family: 'Sofia Pro';
 }
 
-.navbar{
-    position: relative;
+.navbar {
+  position: relative;
 }
-.buttonOrange{
-    position: absolute;
-    background-color: #E9672B ;
-    border-radius: 40px;
-    right: 4rem ;
-    color: #fff;
+.buttonOrange {
+  position: absolute;
+  background-color: #e9672b;
+  border-radius: 40px;
+  right: 4rem;
+  color: #fff;
 }
 
-.dg{
-    position: relative;
+.dg {
+  position: relative;
 }
-.b-close{
-    position: absolute;
-    left: 94%;
-    top: 2px;
+.b-close {
+  position: absolute;
+  left: 94%;
+  top: 2px;
 }
-.create-button{
-    
-    /* position: absolute; */
-    background-color: #E9672B ;
-    border-radius: 40px;
-    /* right: 4rem ; */
-    /* color: #fff; */
-    border: none;
-    
+.create-button {
+  /* position: absolute; */
+  background-color: #e9672b;
+  border-radius: 40px;
+  /* right: 4rem ; */
+  /* color: #fff; */
+  border: none;
+}
+
+.otp-btn {
+    margin: 4rem;
+  -webkit-border-radius: 60;
+  -moz-border-radius: 60;
+  border-radius: 60px;
+  font-family: Arial;
+  color: #ffffff;
+  font-size: 14px;
+  background: #de5212;
+  padding: 10px 20px 10px 20px;
+  text-decoration: none;
+  border: none;
+}
+
+.otp-btn:hover {
+  background: #fc3c3c;
+  text-decoration: none;
+}
+
+.or {
+  position: absolute;
+  left: 50%;
+  bottom: 20%;
 }

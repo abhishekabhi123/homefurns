@@ -3,6 +3,7 @@ const {
   PRODUCT_COLLECTION,
   ADMIN_COLLECTION,
   USER_COLLECTION,
+  CATEGORY_COLLECTION,
 } = require('../config/collections');
 const { get } = require('../config/connection');
 const bcrypt = require('bcrypt');
@@ -25,6 +26,7 @@ module.exports = {
         .collection(PRODUCT_COLLECTION)
         .insertOne(data)
         .then((data) => {
+          
           resolve(data.insertedId);
         });
     });
@@ -64,7 +66,7 @@ module.exports = {
     });
   },
   updateProductDetails: (proId, proDetails) => {
-    const { name, price, description } = proDetails;
+    const { name, price, description,category } = proDetails;
     return new Promise(async (resolve, reject) => {
       get()
         .collection(PRODUCT_COLLECTION)
@@ -75,9 +77,14 @@ module.exports = {
               name: name,
               description: description,
               price: price,
+              category: category,
             },
+          },{
+            upsert:true,
           }
-        );
+        ).then((data) => {
+          resolve(data.insertedId);
+        })
     });
   },
   getAllUsers: () => {
@@ -117,7 +124,7 @@ module.exports = {
       const { username, email, password } = userData;
       bcrypt.hash(userData.password, 10).then((result) => {
         userData.password = result;
-        delete userData.confirmPassword;
+        // delete userData.confirmPassword;
         get()
           .collection(USER_COLLECTION)
           .insertOne({
@@ -150,7 +157,7 @@ module.exports = {
                   {
                     $set: {
                       username: username,
-                      password: password,
+                      password: pass,
                       email: email,
                     },
                   }
@@ -174,14 +181,63 @@ module.exports = {
             get()
               .collection(USER_COLLECTION)
               .updateOne({ _id: ObjectId(id) }, { $set: { isAllowed: false } });
-              resolve(true);
+            resolve(true);
           } else {
             console.log('Unblocking user');
             get()
               .collection(USER_COLLECTION)
               .updateOne({ _id: ObjectId(id) }, { $set: { isAllowed: true } });
-              resolve(true);
+            resolve(true);
           }
+        });
+    });
+  },
+  getAllCategories: () => {
+    return new Promise((resolve, reject) => {
+      get()
+        .collection(CATEGORY_COLLECTION)
+        .find()
+        .toArray()
+        .then((categories) => {
+          resolve(categories);
+        });
+    });
+  },
+  getCategory: (id) => {
+    return new Promise((resolve, reject) => {
+      get().collection(CATEGORY_COLLECTION).findOne({_id: ObjectId(id)}).then((category) => {
+        resolve(category);
+      })
+    })
+  },
+  addCategory: (data) => {
+    return new Promise((resolve, reject) => {
+      get()
+        .collection(CATEGORY_COLLECTION)
+        .insertOne(data)
+        .then((status) => {
+          resolve(status);
+        });
+    });
+  },
+  editCategory: (data, body) => {
+    return new Promise((resolve, reject) => {
+      get()
+        .collection(CATEGORY_COLLECTION)
+        .updateOne({ _id: ObjectId(data) }, { $set: { name: body.name } })
+        .then((status) => {
+          resolve(true);
+        });
+    });
+  },
+  deleteCategory: (data) => {
+    return new Promise((resolve, reject) => {
+      console.log(data);
+      get()
+        .collection(CATEGORY_COLLECTION)
+        .deleteOne({ _id: ObjectId(data) })
+        .then((status) => {
+          if (status) resolve(true);
         });
     });
   },

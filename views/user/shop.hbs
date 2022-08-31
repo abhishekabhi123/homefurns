@@ -1,43 +1,49 @@
 {{> header}}
 
-<div
-  class='container-fluid d-flex justify-content-center'
-  style='height: 100vh;'
->
-  <div class='col-md-2 bg-danger'></div>
-  <div class='col-md-10'>
-    <div class='container'>
-      <div class=' row g-3'>
+<div class="container d-flex justify-content-center mt-5 mb-3">
+  {{!-- <div class='col-md-2 bg-danger'></div> --}}
+  {{!-- <div class='container col-md-10'> --}}
+    {{!-- <div class='container'> --}}
+      <div class='row card-group g-3' style="
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;column-gap:2rem
+">
         {{#each products}}
-          <div class='p-2 col-sm-3 my-2 ml-3'>
-            <div class='card'>
-              <a href="/product/{{this._id}}">
-              <img
-                class='card-img-top'
-                
-                src="product-images/{{this._id}}.jpg"
-                {{!-- src = "product-images\62ffcc2fd48521c3d3f58734.jpg" --}}
-                width="200px"
-                height="200px"
-                style="overflow: hidden"
-                alt='Card image cap'
-              />
+          {{!-- <div class='' > --}}
+            
+            <div class='card p-2 col-3 my-2 ml-3 mr-2' style="height:23rem;width: 18rem; border:1px solid;">
+              <a href='/product/{{this._id}}'>
+                <img
+                  class='card-img-top'
+                  src='product-images/{{this._id}}.jpg'
+                  {{! src = "product-images\62ffcc2fd48521c3d3f58734.jpg" }}
+                  width='200px'
+                  height='200px'
+                  style='overflow: hidden'
+                  alt='Card image cap'
+                />
               </a>
               <div
                 class='rounded-circle position-absolute d-flex justify-content-center'
               >
                 <p class='m-auto'>75%</p>
               </div>
-              <div class='card-body'>
-                <h5 class='card-title'>{{this.name}}</h5>
-                <p class='card-text'>{{this.price}}</p>
-                <div class="row">
-                  <a href='#' class='btn btn-primary w-50 '>Add to cart</a>
-                  <a href='#' class='btn btn-primary w-50 '>Buy now</a>
+              <div class='card-body' style='height: 166px;width: 17rem;>
+                <span class='card-title' style='width: 35rem;'>
+                  {{this.name}}
+                </span>
+                <p class='card-text' style="text-align: center;">{{this.price}} $</p>
+                <div class='row'>
+                  <a href='/addtocart/{{this._id}}' class='btn btn-sm '>Add to cart</a>
+                  <a href='#' class='btn btn-sm ' >Buy now</a>
                 </div>
               </div>
             </div>
-          </div>
+          {{!-- </div> --}}
         {{/each}}
+      </div>
+    {{!-- </div> --}}
+  {{!-- </div> --}}
   </div>
-</div>
+  {{> footer}}
+{{!-- </div> --}}

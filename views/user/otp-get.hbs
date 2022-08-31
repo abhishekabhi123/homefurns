@@ -17,10 +17,9 @@
     <div class='container'>
       <div class='row align-items-center justify-content-center'>
         <div class='col-md-7'>
-          <h3>Login to <strong>Colorlib</strong></h3>
-          <p class='mb-4'>Lorem ipsum dolor sit amet elit. Sapiente sit aut eos
-            consectetur adipisicing.</p>
-          <form action='/get-otp' method='post'>
+          <h3>Login to <strong>Home.com</strong></h3>
+          <p class='mb-4'>Please enter your registered phone number</p>
+          <form action='/get-otp' method='post' id="get-otp">
             <div class='form-group first'>
               <label for='username'>Phone</label>
               <input
@@ -28,14 +27,15 @@
                 class='form-control'
                 name='phone'
                 placeholder='Phone number'
-                id='password'
+                id='otp'
               />
             </div>
 
             <input
               type='submit'
-              value='Log In'
+              value='Send OTP'
               class='btn btn-block btn-primary'
+              
             />
 
           </form>

@@ -1,5 +1,5 @@
 <div class="container d-flex justify-content-center"  >
-  <form class="col-sm-6" action="/admin/add-product/{{product._id}}" method="post" enctype="multipart/form-data">
+  <form class="col-sm-6" action="/admin/edit-product/{{product._id}}" method="post" enctype="multipart/form-data">
   <div class="mb-3">
     <input type="text" name="name" value="{{product.name}}" placeholder="Name" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
   </div>
@@ -10,8 +10,11 @@
     <input type="text" name="price" value="{{product.price}}" placeholder="Price" class="form-control" id="exampleInputPassword1">
   </div>
   <div class="mb-3">
+    <input type="text" name="category" value="{{product.category}}" placeholder="Category" class="form-control" id="exampleInputPassword1">
+  </div>
+  <div class="mb-3">
     <img src="/product-images/{{product._id}}.jpg" width="100px" height="100px" alt="product-image" srcset="">
-    <input type="file" name="image" value="" class="form-control" id="exampleInput" class="form-control" id="exampleInputPasswordexampleInputPassword1">
+    <input type="file" name="image" value="" class="form-control" id="exampleInput" class="form-control" id="exampleInputPasswordexampleInputPassword1 ">
   </div>
   <button type="submit" class="btn btn-primary">Submit</button>
 </form>

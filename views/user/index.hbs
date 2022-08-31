@@ -2,8 +2,8 @@
 {{>header}}
 <div class='chairimage'>
 
-  <span class='awsome'>Awsome furnitures</span>
-  <span class='furniture'>awsome furnitures</span>
+  <span class='awsome'>Awesome furnitures</span>
+  <span class='furniture'>awesome furnitures</span> 
 </div>
 <button class='butn'>
   Take This Look
@@ -22,7 +22,7 @@
     <div class='offer-img'>
     </div>
     <div class='offer-chair'>
-    </div>
+    </div> 
     <div class='inspiration'>
       Find inspiration. Find profesionals
     </div>
@@ -34,7 +34,10 @@
     {{#each products}}
       <div class='p-2 col-sm-3 ml-3'>
         <div class='card'>
-          <img class='card-img-top' src={{this.image}} alt='Card image cap' />
+          <a href='/product/{{this._id}}'>
+          <img class='card-img-top' src="/product-images/{{this._id}}.jpg" width='200px'
+                  height='200px'
+                  style='overflow: hidden' alt='Card image cap' /></a>
           <div
             class='rounded-circle position-absolute d-flex justify-content-center'
           >
@@ -42,8 +45,8 @@
           </div>
           <div class='card-body'>
             <h5 class='card-title'>{{this.name}}</h5>
-            <p class='card-text'>{{this.price}}</p>
-            <a href='#' class='btn btn-primary'>Buy now</a>
+            <p class='card-text'>{{this.price}}$</p>
+            <a href='#' class='btn '>Buy now</a>
           </div>
         </div>
       </div>
@@ -55,13 +58,15 @@
     Explore Our Products
   </div>
   <div class='row'>
-    {{#each most}}
+    {{#each products}}
       <div class='card exp-card col-sm-3'>
-        <img src='{{this.image}}' class='card-img-top' alt='...' />
+          <a href='/product/{{this._id}}'>
+        <img src='/product-images/{{this._id}}.jpg' class='card-img-top' alt='...' width='200px'
+                  height='200px' /></a>
         <div class='card-body'>
           <h5 class='card-title'>{{this.name}}</h5>
-          <p class='card-text'>{{this.price}}</p>
-          <a href='#' class='btn btn-primary'>Go somewhere</a>
+          <p class='card-text'>{{this.price}}$</p>
+          <a href='#' class='btn '>Buy now</a>
         </div>
       </div>
     {{/each}}
@@ -78,13 +83,14 @@
     Top Trending products
   </div>
   <div class='row'>
-    {{#each most}}
+    {{#each products}}
       <div class='card exp-card col-sm-3'>
-        <img src='{{this.image}}' class='card-img-top' alt='...' />
+         <a href='/product/{{this._id}}'>
+        <img src='/product-images/{{this._id}}.jpg' class='card-img-top' alt='...' width="200px" height="200px"/></a>
         <div class='card-body'>
           <h5 class='card-title'>{{this.name}}</h5>
-          <p class='card-text'>{{this.price}}</p>
-          <a href='#' class='btn btn-primary'>Go somewhere</a>
+          <p class='card-text'>{{this.price}}$</p>
+          <a href='#' class='btn '>Buy now</a>
         </div>
       </div>
     {{/each}}
@@ -113,13 +119,13 @@
     New arrival
   </div>
   <div class='row'>
-    {{#each most}}
-      <div class='card exp-card col-sm-3'>
-        <img src='{{this.image}}' class='card-img-top' alt='...' />
+    {{#each products}}
+      <div class='card exp-card col-sm-3'><a href='/product/{{this._id}}'>
+        <img src='/product-images/{{this._id}}.jpg' class='card-img-top' alt='...' width="200px"  height="200px" /></a>
         <div class='card-body'>
           <h5 class='card-title'>{{this.name}}</h5>
-          <p class='card-text'>{{this.price}}</p>
-          <a href='#' class='btn btn-primary'>Go somewhere</a>
+          <p class='card-text'>{{this.price}}$</p>
+          <a href='#' class='btn '>Buy now</a>
         </div>
       </div>
     {{/each}}

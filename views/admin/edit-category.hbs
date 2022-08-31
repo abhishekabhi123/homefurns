@@ -1,0 +1,33 @@
+<div class='container d-flex justify-content-center'>
+  <form
+    class='col-sm-6'
+    action='/admin/edit-category/{{category._id}}'
+    method='post'
+    enctype='multipart/form-data'
+  >
+    <div class='mb-3'>
+      <input
+        type='text'
+        value="{{category.name}}"
+        name='name'
+        placeholder='Category Name'
+        class='form-control'
+        id='exampleInputEmail1'
+      />
+    </div>
+    {{!-- <div class='mb-3'>
+      {{#each products}}
+      <input
+        class='form-check-input'
+        type='checkbox'
+        value=''
+        id='flexCheckDefault'
+      />
+      <label class='form-check-label' for='flexCheckDefault'>
+        {{this.name}}
+      </label>
+      {{/each}}
+    </div> --}}
+    <button type='submit' class='btn btn-primary'>Submit</button>
+  </form>
+</div>
