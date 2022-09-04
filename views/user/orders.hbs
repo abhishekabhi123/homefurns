@@ -1,0 +1,21 @@
+<span class='kart'>Shoping Cart</span>
+{{#each orders}}
+	<div class='border border-dark m-5'>
+		{{!-- <p>{{this.}}</p> --}}
+		<div><img
+				src='/product-images/{{this.products.productId}}.jpg'
+				width='50px'
+				alt=''
+			/></div>
+		<p>{{this.paymentMethod}}</p>
+		<p>{{this.toalAmount}}</p>
+		<p>{{this.paymentStatus}}</p>
+		<p>{{this.date}}</p>
+		<a
+			class='btn btn-primary'
+			href='/order/details/{{this._id}}'
+		>Details</a>
+		{{!-- <a href="/order/cancel/{{_id}}" class="btn btn-primary" onclick="return confirm('Do you sure want to cancel this order?');">Cancel</a> --}}
+
+	</div>
+{{/each}}

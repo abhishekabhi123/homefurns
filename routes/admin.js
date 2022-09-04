@@ -17,6 +17,9 @@ const {
   deleteCategory,
   editCategory,
   getCategory,
+  getOrders,
+  getOrderDetails,
+  updateOrderStatus,
 } = require('../helpers/admin-helper');
 var router = express.Router();
 
@@ -43,9 +46,9 @@ router.post('/login', (req, res) => {
   });
 });
 
-router.use((req, res, next) => {
-  req.session.adminLoggedIn ? next() : res.redirect('/admin/login');
-});
+// router.use((req, res, next) => {
+//   req.session.adminLoggedIn ? next() : res.redirect('/admin/login');
+// });
 
 /* GET home page. */
 router.get('/', (req, res) => {
@@ -106,15 +109,19 @@ router.get('/products', (req, res) => {
 });
 
 router.get('/add-product', (req, res) => {
-  res.render('admin/add-product');
+  getAllCategories().then((categories) => {
+
+    res.render('admin/add-product',{categories: categories});
+  })
 });
 
 router.post('/add-product', (req, res) => {
   const image = req.files.image;
+  console.log(req.body)
   addProduct(req.body).then((insertId) => {
     console.log(insertId)
     image.mv(`./public/product-images/${insertId}.jpg`, (err, done) => {
-      if (!err) res.render('admin/add-product');
+      if (!err) res.redirect('/admin/add-product');
       else console.log(err);
     });
   });
@@ -136,7 +143,6 @@ router.get('/edit-product/:id', (req, res) => {
 router.post('/edit-product/:id', (req, res) => {
   updateProductDetails(req.params.id, req.body).then(() => {
     res.redirect('/admin/products');
-    
     image.mv(`./public/product-images/${insertId}.jpg`, (err, done) => {
       if (!err) res.render('admin/add-product');
       else console.log(err);
@@ -181,5 +187,33 @@ router.get('/delete-category/:id', (req, res) => {
     res.redirect('/admin/categories');
   });
 });
+
+//===================Orders=========================
+
+router.get('/orders', (req, res) => {
+  getOrders().then((orders) => {
+    res.render('admin/orders',{orders:orders })
+  })
+})
+ 
+router.get('/order/details/:id', (req, res) => {
+  getOrderDetails(req.params.id).then((orders) => {
+    res.render('admin/order-details',{orderDetails:orders})
+  })
+})
+
+router.post('/order/changeStatus', (req, res) => {
+  const { orderId, productId, status } = req.body
+  updateOrderStatus(orderId, productId, status).then((orders) => {
+    res.status(200).send("success")
+  })
+})
+
+router.get('/order/cancel/:orderId/:productId', (req, res) => {
+  console.log(req.params.orderId)
+  updateOrderStatus(req.params.orderId,req.params.productId, "cancelled").then(() => {
+    res.redirect('/admin/orders')
+  })
+})
 
 module.exports = router;

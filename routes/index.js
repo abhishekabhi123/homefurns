@@ -1,5 +1,6 @@
 const { response } = require('express');
 var express = require('express');
+const { getAllCategories } = require('../helpers/admin-helper');
 const {
   doLogin,
   doSignup,
@@ -16,6 +17,11 @@ const {
   getCartProdutDetails,
   placeOrder,
   getSuggestions,
+  getOrders,
+  getAmount,
+  getOrderDetails,
+  cancelOrders,
+  getCategory,
 } = require('../helpers/user-helper');
 var router = express.Router();
 
@@ -42,6 +48,7 @@ const most = [
   },
 ];
 
+
 router.get('/get-otp', (req, res) => {
   res.render('user/otp-get');
 });
@@ -59,7 +66,8 @@ router.post('/get-otp', (req, res) => {
 });
 
 router.post('/verify-otp', (req, res) => {
-  verifyOtp(req.body).then((response) => {
+  let phone = req.session.phone
+  verifyOtp(req.body, phone).then((response) => {
     if (response) {
       loginOtp(req.session.phone).then((response) => {
         console.log(response); 
@@ -88,7 +96,7 @@ router.post('/login', (req, res) => {
       console.log(response);
       console.log('error ');
       req.session.loginErr = true;
-      res.redirect('/');
+      res.redirect('/login');
     }
   });
 });
@@ -118,7 +126,7 @@ router.get('/', function (req, res, next) {
     if (req.session.loggedIn) {
       res.render('user/index', { products, most, user });
     } else {
-      console.log('login ');
+      console.log('login ', req.session.loginErr);
       res.render('user/index', {
         products,
         most,
@@ -141,7 +149,9 @@ router.get('/', function (req, res, next) {
 
 router.get('/shop', (req, res) => {
   getAllProducts().then((products) => {
-    res.render('user/shop', { products, user: req.session.user });
+    getAllCategories().then((categories) => {
+      res.render('user/shop', { products, categories, user: req.session.user });
+    })
   });
 });
 
@@ -156,7 +166,8 @@ router.get('/product/:id', (req, res) => {
 });
 
 router.get('/login', (req, res) => {
-  res.render('user/login');
+
+  res.render('user/login',{ loginErr: req.session.loginErr});   
   
 });
 
@@ -169,7 +180,7 @@ function verifyLogin(req, res, next) {
     next();
   } else {
     res.redirect('/login');
-  }
+  } 
 }
 
 router.get('/addToCart/:id',verifyLogin, (req, res) => {
@@ -216,15 +227,45 @@ router.get('/checkout', (req, res) => {
 })
 
 router.post('/checkout',verifyLogin, (req, res) => {
-  // if(req.body.paymentMethod === 'cod')
   getCartProdutDetails(req.body.userId).then((products) => {
-    getTotalAmount(req.body.userId).then((total) => {
-      placeOrder(req.body, products, total).then(()=> {
-        res.json({status: true})
+      getTotalAmount(req.body.userId).then((total) => {
+        placeOrder(req.body, products, total).then(()=> {
+          console.log('products are : ',products)
+          res.json({status: true})
+        })
       })
-    })
   })
   console.log(req.body)
+})
+
+router.get('/orders', (req, res) => {
+  getOrders(req.session.user._id).then((orders) => {
+    console.log(orders)
+    res.render('user/orders', {orders: orders})
+  })
+})
+
+router.get('/order/details/:id', (req, res) => {
+  getOrderDetails(req.params.id).then((orders) => {
+    console.log("Product details : ",orders)
+    res.render('user/order-details',{orderDetails:orders})
+  })
+}) 
+
+router.get('/order/cancel/:orderId/:productId', (req, res) => {
+  cancelOrders(req.params.orderId,req.params.productId).then(() => {
+    res.redirect('/')
+  })
+})
+
+router.get('/categories/:categoryId',(req, res) => {
+  user = req.session.user;
+  getCategory(req.params.categoryId).then((products) => {
+    getAllCategories().then((categories) => {
+
+      res.render('user/shop', { products: products,categories, most, user });
+    })
+  })
 })
 
 router.get('/logout',verifyLogin, (req, res) => {

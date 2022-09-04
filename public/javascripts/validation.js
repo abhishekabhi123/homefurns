@@ -153,7 +153,7 @@ $(document).ready(function () {
           phone: "Invalid phone number",
     
         },
-      });  
+      });    
       $("#otp-verify").validate({  
         rules: {
      

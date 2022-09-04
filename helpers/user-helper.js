@@ -13,11 +13,10 @@ const {
   ObjectId
 } = require('mongodb');
 require('dotenv').config();
-const client = new twilio(
-  process.env.TWILIO_ACCOUNT_SID,
-  process.env.TWILIO_AUTH_TOKEN
-);
-let otp = 0;
+const accountSid = process.env.TWILIO_ACCOUNT_SID;
+const authToken = process.env.TWILIO_AUTH_TOKEN;
+const client = require('twilio')(accountSid, authToken);
+
 module.exports = {
   doSignup: (userData) => {
     return new Promise(async (resolve, reject) => {
@@ -87,29 +86,35 @@ module.exports = {
     otp = generateOTP();
     return new Promise((resolve, reject) => {
       console.log('otpSignup');
-      client.messages
+      
+      client.verify.v2.services(process.env.TWILIO_SERVICE_ID)
+        .verifications
         .create({
-          body: `This is login otp from Home.com. your otp for login is : ${otp}`,
           to: `+91${data.phone}`,
-          from: process.env.TWILIO_NUMBER,
+          channel: 'sms'
         })
-        .then((message) => {
-          console.log(message.sid);
+        .then(verification => {
+          console.log(verification.status);
           resolve(true);
-        })
-        .catch((error) => {
-          console.log(error);
         });
     });
   },
-  verifyOtp: (body) => {
+  verifyOtp: (body, phone) => {
     return new Promise((resolve, reject) => {
-      console.log(body.otp);
-      if (otp == body.otp) {
-        resolve(true);
-      } else {
-        resolve(false);
-      }
+      client.verify.v2.services(process.env.TWILIO_SERVICE_ID)
+        .verificationChecks
+        .create({
+          to: `+91${phone}`,
+          code: body.otp
+        })
+        .then(verification_check => {
+          console.log(verification_check.status)
+          if(verification_check.status === "approved"){
+            resolve(true)
+          } else {
+            resolve( false)
+          }
+        });
     });
   },
   loginOtp: (phone) => {
@@ -318,10 +323,12 @@ module.exports = {
           'cartItems.productId': ObjectId(productId)
         }, {
           $pull: {
-            'cartItems': {'productId':ObjectId(productId)  }
+            'cartItems': {
+              'productId': ObjectId(productId)
+            }
           }
         })
-        .then((status) => { 
+        .then((status) => {
           console.log(status)
           resolve(status);
         });
@@ -332,7 +339,7 @@ module.exports = {
     return new Promise((resolve, reject) => {
       try {
         get()
-          .collection(CART_COLLECTION) 
+          .collection(CART_COLLECTION)
           .aggregate([{
               $match: {
                 userId: ObjectId(userId)
@@ -356,9 +363,17 @@ module.exports = {
               $unset: ["userId"]
             },
             {
-              $group:{_id: null,
-                total: {$sum:{$multiply:['$cartItems.quantity', {$toInt :'$cart.price'}]}}}
-            },{
+              $group: {
+                _id: null,
+                total: {
+                  $sum: {
+                    $multiply: ['$cartItems.quantity', {
+                      $toInt: '$cart.price'
+                    }]
+                  }
+                }
+              }
+            }, {
               $unset: ["_id"]
             }
             // { $project: { cart: 1 } },
@@ -366,7 +381,7 @@ module.exports = {
           .toArray()
           .then((data) => {
             console.log(data[0]);
-            let val = data[0]?data[0].total:'0';
+            let val = data[0] ? data[0].total : '0';
             resolve(val);
           });
       } catch (error) {
@@ -374,46 +389,198 @@ module.exports = {
       }
     });
 
-},
-getCartProdutDetails: (userId) => {
-  return new Promise((resolve, reject) => {
-    get().collection(CART_COLLECTION).findOne({userId : ObjectId(userId)}).then((cart) => {
-      resolve(cart.cartItems)
-    })
-  })
-},
-placeOrder: (order, products, total) => {
-  return new Promise((resolve, reject) => {
-    console.log(order, products, total)
-    let status = order.paymentMethod === 'cod' ? 'placed' : 'pending'
-    let orderObj = {
-      deliveryDetails:{
-        name: order.name,
-        phone: order.phone,
-        address: order.address,
-      },
-      userId: ObjectId(order.userId),
-      paymentMethod: order.paymentMethod,
-      products: products,
-      totalAmount: total,
-      status: status,
-      date: new Date()
-    }
-    get().collection(ORDER_COLLECTION).insertOne(orderObj).then((cart) => {
-      get().collection(CART_COLLECTION).deleteOne({userId: ObjectId(order.userId)}).then(() => {
+  },
+  getCartProdutDetails: (userId) => {
+    console.log(userId);
+    return new Promise((resolve, reject) => {
+      try {
+        get()
+          .collection(CART_COLLECTION)
+          .aggregate([{
+              $match: {
+                userId: ObjectId(userId)
+              }
+            },
+            {
+              $unwind: '$cartItems',
+            },
+            {
+              $lookup: {
+                from: 'products',
+                localField: 'cartItems.productId',
+                foreignField: '_id',
+                as: 'cart',
+              },
+            },
+            {
+              $unwind: '$cart'
+            },
+            {
+              $unset: ["userId"]
+            },
+            {
+              $match: {
+                cartItems: {
+                  $exists: true
+                }
+              }
+            },
+            {
+              $set: {
+                total: {
+                  $multiply: ['$cartItems.quantity', {
+                    $toInt: '$cart.price'
+                  }]
+                }
+              }
+            },
+            {
+              $project: {
+                cartItems: 1,
+                total: 1
+              }
+            },
+          ])
+          .toArray()
+          .then((data) => {
+            console.log('total is : ', data);
+            data.map(item => {
+              item.cartItems.total = item.total
+              item.cartItems.status = 'Order Placed'
+            })
+            let products = [];
+            data.forEach(item => {
+              products.push(item.cartItems)
+            })
+            console.log('modified data is : ', data);
+            resolve(products);
+          });
+      } catch (error) {
+        console.error(error);
+      }
+    });
 
+  },
+  // getCartProdutDetails: (userId) => {
+  //   return new Promise((resolve, reject) => {
+  //     get().collection(CART_COLLECTION).findOne({userId : ObjectId(userId)}).then((cart) => {
+  //       resolve(cart.cartItems)
+  //     })
+  //   })
+  // },
+  placeOrder: (order, products, total) => {
+    return new Promise((resolve, reject) => {
+      console.log(order, products, total)
+      let status = order.paymentMethod === 'cod' ? 'placed' : 'pending'
+      let orderObj = {
+        deliveryDetails: {
+          name: order.name,
+          phone: order.phone,
+          address: order.address,
+        },
+        userId: ObjectId(order.userId),
+        paymentMethod: order.paymentMethod,
+        products: products,
+        totalAmount: total,
+        paymentStatus: status,
+        date: new Date(),
+      }
+      get().collection(ORDER_COLLECTION).insertOne(orderObj).then((cart) => {
+        get().collection(CART_COLLECTION).deleteOne({
+          userId: ObjectId(order.userId)
+        }).then(() => {
+
+          resolve()
+        })
+      })
+    })
+  },
+  getOrders: (userId) => {
+    return new Promise((resolve, reject) => {
+      get()
+        .collection(ORDER_COLLECTION)
+        .aggregate([
+
+          {
+            $match: {
+              userId: ObjectId(userId)
+            }
+          },
+          // {$unwind: "$products"},
+          // {
+          //   $lookup: {
+          //     from: PRODUCT_COLLECTION,
+          //     localField: "products.productId",
+          //     foreignField: "_id",
+          //     as: "productDetails"
+          //   }
+          // },
+          // {
+          //   $unwind: "$productDetails"
+          // },
+          // {$project: {productDetails: 1, paymentMethod: 1,  status: 1, products: 1, date: 1}},
+        ]).toArray()
+        .then((data) => {
+          // console.log(data);
+          resolve(data);
+        });
+    })
+  },
+  getOrderDetails: (orderId) => {
+    return new Promise((resolve, reject) => {
+      console.log(orderId)
+      get().collection(ORDER_COLLECTION).aggregate([{
+            $match: {
+              _id: ObjectId(orderId)
+            }
+          },
+          {
+            $unwind: "$products"
+          },
+          {
+            $lookup: {
+              from: PRODUCT_COLLECTION,
+              localField: "products.productId",
+              foreignField: "_id",
+              as: "productDetails"
+            }
+          },
+          {
+            $unwind: "$productDetails"
+          }
+        ]).toArray()
+        .then((data) => {
+          resolve(data);
+        })
+    })
+  },
+  cancelOrders: (orderId, productId) => {
+    return new Promise((resolve, reject) => {
+      console.log(orderId, productId)
+      get().collection(ORDER_COLLECTION).updateOne({
+        _id: ObjectId(orderId),
+        'products.productId': ObjectId(productId)
+      }, {
+        $set: {
+          'products.$.status': 'cancelled'
+        }
+      }).then((data) => {
+        console.log(data)
         resolve()
       })
     })
-  })
-}
-}
+  },getCategory: (categoryId) => {
+    return new Promise((resolve, reject) => {
+      get()
+        .collection(PRODUCT_COLLECTION)
+        .find({categories: ObjectId(categoryId)})
+        .toArray()
+        .then((product) => {
+          console.log(product);
+          resolve(product);
+        });
+    });
+  },
 
-function generateOTP() {
-  var digits = '0123456789';
-  let OTP = '';
-  for (let i = 0; i < 4; i++) {
-    OTP += digits[Math.floor(Math.random() * 10)];
-  }
-  return OTP;
+
 }

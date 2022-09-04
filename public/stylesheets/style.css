@@ -1,8 +1,12 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Rubik&display=swap');
+
 * {
   padding: 0;
   margin: 0;
   box-sizing: border-box;
 }
+
 body {
   overflow-x: hidden;
 }
@@ -94,6 +98,7 @@ body {
   width: 100vw;
   height: 90vh;
 }
+
 .butn {
   border: none;
   position: absolute;
@@ -172,10 +177,12 @@ body {
   row-gap: 1rem;
   column-gap: 1rem;
 }
+
 .cards {
   border: 1px solid #f00;
   background: #da3f3138;
 }
+
 .rounded-circle {
   width: 3rem;
   height: 3rem;
@@ -238,6 +245,7 @@ body {
   background: #030303;
   text-decoration: none;
 }
+
 .ad {
   margin-top: 2rem;
   display: flex;
@@ -246,20 +254,24 @@ body {
   gap: 2rem;
   position: relative;
 }
+
 .ad1,
 .ad2,
 .ad3 {
   width: 28.125rem;
   height: 18.375rem;
 }
+
 .ad1 {
   background: #da3e31;
   border-radius: 4px;
 }
+
 .ad2 {
   background: #f4f4f5;
   border-radius: 4px;
 }
+
 .ad3 {
   background: #cdd454;
   opacity: 0.7;
@@ -273,6 +285,7 @@ body {
   border-radius: 4px;
   transform: matrix(-1, 0, 0, 1, 0, 0);
 }
+
 .image-div1 {
   left: 14rem;
 }
@@ -356,6 +369,7 @@ body {
   margin-top: 4rem;
   margin-bottom: 4rem;
 }
+
 .logo-div {
   margin-left: 4rem;
 }
@@ -369,8 +383,9 @@ body {
   justify-content: space-around;
   align-items: center;
   font-family: 'Sofia Pro';
- 
+
 }
+
 .footer-image {
   width: 8rem;
   height: 8rem;
@@ -386,9 +401,11 @@ body {
   gap: 2rem;
   margin-bottom: 1rem;
 }
+
 .first-footer li {
   list-style-type: none;
 }
+
 .company {
   font-weight: bold;
 }
@@ -396,29 +413,36 @@ body {
 .second-footer li {
   list-style-type: none;
 }
+
 @media (max-width: 990px) {
   .nav-link {
     margin-left: 22.5rem;
   }
+
   .home {
     margin-left: -8.5rem;
   }
+
   .icons {
     display: none;
   }
+
   .awsome {
     font-size: 6vw;
   }
+
   .furniture {
     font-size: 2vw;
     margin-left: 9rem;
     margin-top: -3rem;
   }
+
   .icon-div {
     display: flex;
     flex-direction: column;
     align-items: center;
   }
+
   .image1,
   .image2,
   .image3,
@@ -428,19 +452,62 @@ body {
     width: 15rem;
     height: 15rem;
   }
+
   .butn {
     position: absolute;
     left: 35%;
     width: 30%;
   }
+
   .awsome {
     position: absolute;
     top: 20%;
     font-size: 6vw;
   }
+
   .furniture {
     position: absolute;
     top: 30%;
     left: 0;
   }
+}
+
+
+.cate {
+  font-family: 'Sofia Pro';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 24px;
+  /* identical to box height, or 150% */
+
+  display: flex;
+  align-items: center;
+  letter-spacing: 0.02em;
+
+  /* Neutral/Darkest */
+
+  color: #1D1F1F
+}
+
+.shop-list li, .shop-list a{
+list-style-type: none;
+text-decoration: none;
+font-family: 'Rubik';
+font-style: normal;
+font-weight: 400;
+font-size: 16px;
+line-height: 140%;
+/* or 22px */
+
+letter-spacing: 1px;
+
+/* Neutral/Darker */
+
+color: #5D5F5F;
+
+}
+
+.drop{
+  margin-right: 11rem;
 }

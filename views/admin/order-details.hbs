@@ -1,0 +1,62 @@
+<h1>Order details page</h1>
+{{#with orderDetails}}
+<h1>{{deliveryDetails.name}}</h1>
+<h1>{{deliveryDetails.phone}}</h1>
+<h1>{{deliveryDetails.address}}</h1>
+<h1>{{userId}}</h1>
+<h1>{{paymentMethod}}</h1>
+<h1 id="displayStatus">{{status}}</h1>
+{{!-- <h1>{{date}}</h1>
+<h1>{{user._id}}</h1>
+<h1>{{user.username}}</h1>
+<h1>{{user.email}}</h1>
+<h1>{{isCancelled}}</h1> --}}
+{{#each products}}
+<h1>{{this.productId}}</h1>
+<h1>{{this.quantity}}</h1>
+<h1>{{this.total}}</h1>
+<h1 id="{{this.productId}}">{{this.status}}</h1>
+<a href="/admin/order/cancel/{{../_id}}/{{this.productId}}" class="btn btn-primary"
+  onclick="return confirm('Do you sure want to cancel this order?');">Cancel</a>
+<select id="status{{this.productId}}" onchange="changeStatus('{{../_id}}','{{this.productId}}')"
+  {{#ifEquals this.status "cancelled"}} disabled {{/ifEquals }} class="form-select" aria-label="Default select example">
+  <option selected>
+    {{#ifEquals this.status "cancelled"}}
+    Product Cancelled
+    {{else}}
+    Change transit
+    {{/ifEquals}}
+  </option>
+  <option value="Order Placed">Order placed</option>
+  <option value="Dispatched">Dispatched</option>
+  <option value="On Transist">On Transist</option>
+  <option value="Out for Delivery">Out for Delivery</option>
+  <option value="Delivered">Delivered</option>
+</select>
+
+{{/each}}
+{{/with}}
+
+<script>
+  function changeStatus(orderId, productId) {
+    console.log(orderId, productId)
+    let val = $(`#status${productId}`).val()
+    console.log(val)
+    $.ajax({
+      type: "POST",
+      url: "/admin/order/changeStatus",
+      data: {
+        orderId: orderId,
+        productId: productId,
+        status: val,
+      },
+      success: function (data) {
+        console.log('success')
+        $(`#${productId}`).text(val)
+      },
+      error: function (error) {
+        console.log(error)
+      }
+    })
+  }
+</script>

@@ -1,6 +1,25 @@
 {{> header}}
 
-<div class="container d-flex justify-content-center mt-5 mb-3">
+<section class="shop d-flex ">
+<div class="categories mt-5 mx-3">
+  <p class="cate">Categories</p>
+  <ul class="shop-list">
+    {{!-- <li><a href="#"> Cabinets</a></li>
+    <li><a href="#"> Accesories</a></li>
+    <li><a href="#"> Armchairs</a></li>
+    <li><a href="#"> Bookcases</a></li>
+    <li><a href="#"> Curtains</a></li>
+    <li><a href="#"> Tables</a></li>
+    <li><a href="#"> Decor</a></li>
+    <li><a href="#"> Ottomans</a></li>
+    <li><a href="#"> Floorlamps</a></li> --}}
+    {{#each categories}}
+    <li><a href="/categories/{{this._id}}"> {{this.name}}</a></li>
+    {{/each}}
+  </ul>
+</div>
+
+<div class="container-fluid d-flex justify-content-end mt-5 mb-3">
   {{!-- <div class='col-md-2 bg-danger'></div> --}}
   {{!-- <div class='container col-md-10'> --}}
     {{!-- <div class='container'> --}}
@@ -11,11 +30,11 @@
         {{#each products}}
           {{!-- <div class='' > --}}
             
-            <div class='card p-2 col-3 my-2 ml-3 mr-2' style="height:23rem;width: 18rem; border:1px solid;">
+            <div class='card p-2 col-3 my-2 ml-3 mr-2' style="height:auto;width: auto; border:1px solid;">
               <a href='/product/{{this._id}}'>
                 <img
                   class='card-img-top'
-                  src='product-images/{{this._id}}.jpg'
+                  src='/product-images/{{this._id}}.jpg'
                   {{! src = "product-images\62ffcc2fd48521c3d3f58734.jpg" }}
                   width='200px'
                   height='200px'
@@ -45,5 +64,8 @@
     {{!-- </div> --}}
   {{!-- </div> --}}
   </div>
-  {{> footer}}
+  
 {{!-- </div> --}}
+</section>
+
+{{> footer}}

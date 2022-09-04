@@ -1,0 +1,45 @@
+<section>
+	<div class='container'>
+		<div class='container'>
+			<div class='row'>
+				<a href='/admin/add-product' class='mt-5'><div
+						class='float-end btn btn-success'
+					></div></a>
+			</div>
+		</div>
+		<table class='table'>
+			<thead>
+				<tr>
+					<th class='' scope='col'>#</th>
+					<th class='' scope='col'>Name</th>
+					<th class='' scope='col'>Address</th>
+					<th class='' scope='col'>Total</th>
+					<th class='' scope='col'>Date</th>
+					<th class='' scope='col'>Payment</th>
+					<th class='' scope='col'>Status</th>
+					<th class='' scope='col'>Option</th>
+				</tr>
+			</thead>
+			<tbody>
+				{{#each orders}}
+					<tr>
+						<th class='' scope='row'>{{@index}}</th>
+						<td class=''>{{this.user.username}}</td>
+						<td class=''>{{this.deliveryDetails.address}}</td>
+						<td class=''>{{this.totalAmount}}</td>
+						<td> {{this.date}}</td>
+						<td> {{this.paymentMethod}}</td>
+						<td>{{this.status}}</td>
+						<td class=''>
+							<a
+								class='btn btn-primary'
+								href='/admin/order/details/{{this._id}}'
+							>Details</a>
+						</td>
+					</tr>
+				{{/each}}
+
+			</tbody>
+		</table>
+	</div>
+</section>

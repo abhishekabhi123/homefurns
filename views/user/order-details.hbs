@@ -1,0 +1,56 @@
+<h1>Order details page</h1>
+{{#each orderDetails}}
+<h1>{{this.deliveryDetails.name}}</h1>
+<h1>{{this.deliveryDetails.phone}}</h1>
+<h1>{{this.deliveryDetails.address}}</h1> --}}
+<h1>{{this.userId}}</h1>
+ <h1>{{this.paymentMethod}}</h1>
+<h1 id="displayStatus">{{this.paymentStatus}}</h1>
+
+
+<h1>{{date}}</h1>
+<h1>{{user._id}}</h1>
+<h1>{{user.username}}</h1>
+<h1>{{user.email}}</h1>
+<h1>{{isCancelled}}</h1>
+{{/each}}
+{{#each orderDetails}}
+
+{{!-- <h1>{{products}}</h1> --}}
+<h1>{{products.productId}}</h1>
+<h1>{{products.quantity}}</h1>
+<h1>{{products.total}}</h1>
+<h1 id="{{products.productId}}">{{products.status}}</h1>
+{{#ifEquals products.status "cancelled"}}
+<a href="#" class="btn btn-primary" style="opacity: 0.5;">Cancel</a>
+{{else}}
+<a href="/order/cancel/{{_id}}/{{products.productId}}" class="btn btn-primary"
+  onclick="return confirm('Do you sure want to cancel this order?');">Cancel</a>
+{{/ifEquals}}
+{{!-- <h1>{{products.status}}</h1> --}}
+{{/each}}
+
+
+<script>
+  function changeStatus(orderId, productId) {
+    console.log(orderId, productId)
+    let val = $(`#status${productId}`).val()
+    console.log(val)
+    $.ajax({
+      type: "POST",
+      url: "/admin/order/changeStatus",
+      data: {
+        orderId: orderId,
+        productId: productId,
+        status: val,
+      },
+      success: function (data) {
+        console.log('success')
+        $(`#${productId}`).text(val)
+      },
+      error: function (error) {
+        console.log(error)
+      }
+    })
+  }
+</script>

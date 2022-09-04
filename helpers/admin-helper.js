@@ -1,11 +1,16 @@
-const { ObjectId } = require('mongodb');
+const {
+  ObjectId
+} = require('mongodb');
 const {
   PRODUCT_COLLECTION,
   ADMIN_COLLECTION,
   USER_COLLECTION,
   CATEGORY_COLLECTION,
+  ORDER_COLLECTION,
 } = require('../config/collections');
-const { get } = require('../config/connection');
+const {
+  get
+} = require('../config/connection');
 const bcrypt = require('bcrypt');
 
 module.exports = {
@@ -21,12 +26,14 @@ module.exports = {
   },
   addProduct: (data) => {
     // const {name} = data;
+    data.categories = ObjectId(data.categories);
+    console.log(data);
     return new Promise((resolve, reject) => {
       get()
         .collection(PRODUCT_COLLECTION)
         .insertOne(data)
         .then((data) => {
-          
+
           resolve(data.insertedId);
         });
     });
@@ -47,7 +54,9 @@ module.exports = {
     return new Promise((resolve, reject) => {
       get()
         .collection(PRODUCT_COLLECTION)
-        .deleteOne({ _id: ObjectId(id) })
+        .deleteOne({
+          _id: ObjectId(id)
+        })
         .then((data) => {
           console.log('success');
           resolve(data);
@@ -58,7 +67,9 @@ module.exports = {
     return new Promise((resolve, reject) => {
       get()
         .collection(PRODUCT_COLLECTION)
-        .findOne({ _id: ObjectId(id) })
+        .findOne({
+          _id: ObjectId(id)
+        })
         .then((data) => {
           console.log(data);
           resolve(data);
@@ -66,23 +77,27 @@ module.exports = {
     });
   },
   updateProductDetails: (proId, proDetails) => {
-    const { name, price, description,category } = proDetails;
+    const {
+      name,
+      price,
+      description,
+      category
+    } = proDetails;
     return new Promise(async (resolve, reject) => {
       get()
         .collection(PRODUCT_COLLECTION)
-        .updateOne(
-          { _id: ObjectId(proId) },
-          {
-            $set: {
-              name: name,
-              description: description,
-              price: price,
-              category: category,
-            },
-          },{
-            upsert:true,
-          }
-        ).then((data) => {
+        .updateOne({
+          _id: ObjectId(proId)
+        }, {
+          $set: {
+            name: name,
+            description: description,
+            price: price,
+            category: category,
+          },
+        }, {
+          upsert: true,
+        }).then((data) => {
           resolve(data.insertedId);
         })
     });
@@ -102,7 +117,9 @@ module.exports = {
     return new Promise(async (resolve, reject) => {
       get()
         .collection(USER_COLLECTION)
-        .deleteOne({ _id: ObjectId(id) })
+        .deleteOne({
+          _id: ObjectId(id)
+        })
         .then((data) => {
           console.log('success');
           resolve(data);
@@ -113,7 +130,9 @@ module.exports = {
     return new Promise(async (resolve, reject) => {
       get()
         .collection(USER_COLLECTION)
-        .findOne({ _id: ObjectId(id) })
+        .findOne({
+          _id: ObjectId(id)
+        })
         .then((data) => {
           resolve(data);
         });
@@ -121,7 +140,11 @@ module.exports = {
   },
   addUser: (userData) => {
     return new Promise(async (resolve, reject) => {
-      const { username, email, password } = userData;
+      const {
+        username,
+        email,
+        password
+      } = userData;
       bcrypt.hash(userData.password, 10).then((result) => {
         userData.password = result;
         // delete userData.confirmPassword;
@@ -141,10 +164,19 @@ module.exports = {
   },
   updateUser: (id, data) => {
     return new Promise((resolve, reject) => {
-      const { username, password, email } = data;
+      const {
+        username,
+        password,
+        email
+      } = data;
       get()
         .collection(USER_COLLECTION)
-        .findOne({ _id: { $ne: ObjectId(id) }, email: email })
+        .findOne({
+          _id: {
+            $ne: ObjectId(id)
+          },
+          email: email
+        })
         .then((user) => {
           if (user) {
             resolve(user);
@@ -152,18 +184,19 @@ module.exports = {
             bcrypt.hash(password, 10).then((pass) => {
               get()
                 .collection(USER_COLLECTION)
-                .updateOne(
-                  { _id: ObjectId(id) },
-                  {
-                    $set: {
-                      username: username,
-                      password: pass,
-                      email: email,
-                    },
-                  }
-                )
+                .updateOne({
+                  _id: ObjectId(id)
+                }, {
+                  $set: {
+                    username: username,
+                    password: pass,
+                    email: email,
+                  },
+                })
                 .then((result) => {
-                  resolve({ status: true });
+                  resolve({
+                    status: true
+                  });
                 });
             });
           }
@@ -174,19 +207,33 @@ module.exports = {
     return new Promise((resolve, reject) => {
       get()
         .collection(USER_COLLECTION)
-        .findOne({ _id: ObjectId(id) })
+        .findOne({
+          _id: ObjectId(id)
+        })
         .then((user) => {
           if (user.isAllowed === true) {
             console.log('Blocking user');
             get()
               .collection(USER_COLLECTION)
-              .updateOne({ _id: ObjectId(id) }, { $set: { isAllowed: false } });
+              .updateOne({
+                _id: ObjectId(id)
+              }, {
+                $set: {
+                  isAllowed: false
+                }
+              });
             resolve(true);
           } else {
             console.log('Unblocking user');
             get()
               .collection(USER_COLLECTION)
-              .updateOne({ _id: ObjectId(id) }, { $set: { isAllowed: true } });
+              .updateOne({
+                _id: ObjectId(id)
+              }, {
+                $set: {
+                  isAllowed: true
+                }
+              });
             resolve(true);
           }
         });
@@ -205,7 +252,9 @@ module.exports = {
   },
   getCategory: (id) => {
     return new Promise((resolve, reject) => {
-      get().collection(CATEGORY_COLLECTION).findOne({_id: ObjectId(id)}).then((category) => {
+      get().collection(CATEGORY_COLLECTION).findOne({
+        _id: ObjectId(id)
+      }).then((category) => {
         resolve(category);
       })
     })
@@ -224,7 +273,13 @@ module.exports = {
     return new Promise((resolve, reject) => {
       get()
         .collection(CATEGORY_COLLECTION)
-        .updateOne({ _id: ObjectId(data) }, { $set: { name: body.name } })
+        .updateOne({
+          _id: ObjectId(data)
+        }, {
+          $set: {
+            name: body.name
+          }
+        })
         .then((status) => {
           resolve(true);
         });
@@ -235,10 +290,77 @@ module.exports = {
       console.log(data);
       get()
         .collection(CATEGORY_COLLECTION)
-        .deleteOne({ _id: ObjectId(data) })
+        .deleteOne({
+          _id: ObjectId(data)
+        })
         .then((status) => {
           if (status) resolve(true);
         });
     });
   },
+  getOrders: () => {
+    return new Promise((resolve, reject) => {
+      get()
+        .collection(ORDER_COLLECTION)
+        .aggregate([{
+            $lookup: {
+              from: USER_COLLECTION,
+              localField: "userId",
+              foreignField: "_id",
+              as: "user"
+            }
+          },
+          {
+            $unwind: "$user"
+          }
+        ]).toArray()
+        .then((data) => {
+          console.log(data);
+          resolve(data);
+        });
+    })
+  },
+  getOrderDetails: (orderId) => {
+    return new Promise((resolve, reject) => {
+      console.log(orderId)
+      get().collection(ORDER_COLLECTION).aggregate([{
+            $match: {
+              _id: ObjectId(orderId)
+            }
+          },
+          {
+            $lookup: {
+              from: USER_COLLECTION,
+              localField: "userId",
+              foreignField: "_id",
+              as: "user"
+            }
+          },
+          {
+            $unwind: "$user"
+          }
+        ]).toArray()
+        .then((data) => {
+          // console.log(data)
+          resolve(data[0]);
+        })
+    })
+  },
+  updateOrderStatus: (orderId, productId, status) => {
+    return new Promise((resolve, reject) => {
+      console.log('updateproduct')
+      get().collection(ORDER_COLLECTION).updateOne({
+        _id: ObjectId(orderId),
+        'products.productId': ObjectId(productId)
+      }, {
+        $set: {
+          'products.$.status': status
+        }
+      }).then((data) => {
+        console.log(data) 
+        resolve()    
+      })
+    })
+  },
+
 };

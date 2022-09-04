@@ -37,9 +37,15 @@ app.use(
   })
 );
 
+
+
 connect((err) => {
   if (err) console.log("Error occured", err);
   else console.log("Database connected");
+});
+
+hbs.registerHelper('ifEquals', function(arg1, arg2, options) {
+  return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
 });
      
 app.use('/admin', adminRouter); 
