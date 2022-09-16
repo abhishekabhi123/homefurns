@@ -37,7 +37,7 @@ app.use(
   })
 );
 
-
+ 
 
 connect((err) => {
   if (err) console.log("Error occured", err);
@@ -47,6 +47,11 @@ connect((err) => {
 hbs.registerHelper('ifEquals', function(arg1, arg2, options) {
   return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
 });
+
+app.use((req,res,next)=>{
+  res.set('Cache-Control', 'no-store')
+  next();
+})
      
 app.use('/admin', adminRouter); 
 app.use('/', indexRouter);        

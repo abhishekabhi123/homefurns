@@ -3,7 +3,11 @@ const {
   PRODUCT_COLLECTION,
   CART_COLLECTION,
   ORDER_COLLECTION,
+  ADDRESS_COLLECTION,
+  ORDER_ADDRESS_COLLECTION,
 } = require('../config/collections');
+
+
 const {
   get
 } = require('../config/connection');
@@ -16,6 +20,11 @@ require('dotenv').config();
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 const client = require('twilio')(accountSid, authToken);
+var Razorpay = require('razorpay')
+var instance = new Razorpay({
+  key_id: 'rzp_test_7tdogKXJ5P18dm',
+  key_secret: 'HeGvw4UrwZ1tP1Tb1qCxyRkU',
+});
 
 module.exports = {
   doSignup: (userData) => {
@@ -86,7 +95,7 @@ module.exports = {
     otp = generateOTP();
     return new Promise((resolve, reject) => {
       console.log('otpSignup');
-      
+
       client.verify.v2.services(process.env.TWILIO_SERVICE_ID)
         .verifications
         .create({
@@ -109,10 +118,10 @@ module.exports = {
         })
         .then(verification_check => {
           console.log(verification_check.status)
-          if(verification_check.status === "approved"){
+          if (verification_check.status === "approved") {
             resolve(true)
           } else {
-            resolve( false)
+            resolve(false)
           }
         });
     });
@@ -488,9 +497,8 @@ module.exports = {
       get().collection(ORDER_COLLECTION).insertOne(orderObj).then((cart) => {
         get().collection(CART_COLLECTION).deleteOne({
           userId: ObjectId(order.userId)
-        }).then(() => {
-
-          resolve()
+        }).then((response) => {
+          resolve(cart)
         })
       })
     })
@@ -506,18 +514,30 @@ module.exports = {
               userId: ObjectId(userId)
             }
           },
-          // {$unwind: "$products"},
-          // {
-          //   $lookup: {
-          //     from: PRODUCT_COLLECTION,
-          //     localField: "products.productId",
-          //     foreignField: "_id",
-          //     as: "productDetails"
-          //   }
-          // },
-          // {
-          //   $unwind: "$productDetails"
-          // },
+          {
+            $unwind: "$products"
+          },
+          {
+            $lookup: {
+              from: PRODUCT_COLLECTION,
+              localField: "products.productId",
+              foreignField: "_id",
+              as: "productDetails"
+            }
+          },
+          {
+            $unwind: "$productDetails"
+          },
+          {
+            $set: {
+              date: {
+                $dateToString: {
+                  format: "%d/%m/%Y -- %H:%M",
+                  date: "$date"
+                },
+              },
+            },
+          },
           // {$project: {productDetails: 1, paymentMethod: 1,  status: 1, products: 1, date: 1}},
         ]).toArray()
         .then((data) => {
@@ -569,11 +589,14 @@ module.exports = {
         resolve()
       })
     })
-  },getCategory: (categoryId) => {
+  },
+  getCategory: (categoryId) => {
     return new Promise((resolve, reject) => {
       get()
         .collection(PRODUCT_COLLECTION)
-        .find({categories: ObjectId(categoryId)})
+        .find({
+          categories: ObjectId(categoryId)
+        })
         .toArray()
         .then((product) => {
           console.log(product);
@@ -582,5 +605,135 @@ module.exports = {
     });
   },
 
+  addAddress: (body, userId) => {
+    return new Promise((resolve, reject) => {
+      console.log("in add address helper")
+      const {
+        name,
+        phone,
+        locality,
+        city,
+        pincode,
+        state,
+        houseName,
+        landmark,
+        postOffice
+      } = body;
+      let addressObj = {
+        userId: userId,
+        name: name,
+        phone: phone,
+        locality: locality,
+        city: city,
+        state: state,
+        pincode: Number(pincode),
+        houseName: houseName,
+        landmark: landmark,
+        postOffice: postOffice,
+      };
+      get().collection(ADDRESS_COLLECTION).insertOne(addressObj).then((state) => {
+        resolve(state);
+      });
+    });
+  },
+  getAddress: (userId) => {
+    return new Promise((resolve, reject) => {
+      get().collection(ADDRESS_COLLECTION).find({
+          userId: userId
+        }).toArray()
+        .then((address) => {
+          resolve(address);
+        });
+    });
+  },
+  getAddressById: (addressId) => {
+    return new Promise((resolve, reject) => {
+      get().collection(ADDRESS_COLLECTION)
+        .findOne({
+          _id: ObjectId(addressId)
+        })
+        .then((address) => {
+          resolve(address);
+        });
+    });
+  },
+  addCheckoutAddress: (address) => {
+    console.log("address is : ", address);
+    const {
+      name,
+      phone,
+      locality,
+      city,
+      pincode,
+      state,
+      houseName,
+      landmark,
+      userId,
+      postOffice,
+    } = address;
+    let addressObj = {
 
+      userId: userId,
+      name: name,
+      phone: phone,
+      locality: locality,
+      city: city,
+      state: state,
+      pincode: Number(pincode),
+      houseName: houseName,
+      landmark: landmark,
+      postOffice: postOffice,
+    };
+    return new Promise((resolve, reject) => {
+      get().collection(ORDER_ADDRESS_COLLECTION).insertOne(addressObj).then((state) => {
+        resolve(state);
+      });
+    });
+  },
+  generateRazorpay: (orderId, total) => {
+    return new Promise((resolve, reject) => {
+      var options = {
+        amount: total * 100, // amount in the smallest currency unit
+        currency: "INR",
+        receipt: "" + orderId
+      };
+      instance.orders.create(options, function (err, order) {
+        if (err) {
+          console.log(err)
+        } else {
+          console.log("New order:", order);
+          resolve(order);
+        }
+      });
+    })
+  },
+  verifyPayment: (details) => {
+    return new Promise((resolve, reject) => {
+      const crypto = require('crypto');
+      console.log(details['response[razorpay_order_id]'] + '  |  ' + details['response[razorpay_payment_id]'])
+      let hmac = crypto.createHmac('sha256', 'HeGvw4UrwZ1tP1Tb1qCxyRkU')
+      hmac.update(details['response[razorpay_order_id]'] + '|' + details['response[razorpay_payment_id]']);
+      hmac = hmac.digest('hex');
+      console.log(hmac, details['response[razorpay_signature]'])
+      if (hmac == details['response[razorpay_signature]']) {
+        resolve()
+      }
+      else{ 
+        reject('Payment failed');
+      }
+
+    })
+  },
+  changePaymentStatus:(orderId)=>{
+    return new Promise((resolve,reject)=>{
+      get().collection(ORDER_COLLECTION).updateOne({_id:ObjectId(orderId)},
+      {
+        $set:{
+          status:'placed'
+        }
+      }).then(()=>{
+        resolve();
+      })
+    })
+  }
 }

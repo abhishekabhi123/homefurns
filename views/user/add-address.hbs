@@ -1,0 +1,154 @@
+{{!-- <form id="checkout-form" method="post">
+  <div class="mb-3">
+    <label class="form-label">Name</label>
+    <input required type="text" name="name" class="form-control" />
+    <div id="emailHelp" class="form-text">We'll never share your email with
+      anyone else.</div>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Phone</label>
+    <input required type="number" name="phone" class="form-control" />
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Locality</label>
+    <input required type="text" name="locality" class="form-control" />
+  </div>
+  <div class="mb-3">
+    <label class="form-label">City</label>
+    <input required type="text" name="city" class="form-control" />
+  </div>
+  <div class="mb-3">
+    <label class="form-label">state</label>
+    <select class="form-select" aria-label="Default select example">
+      <option selected>State</option>
+      <option value="kerala">Kerala</option>
+      <option value="tamilnadu">Tamilnadu</option>
+    </select>
+  </div>
+  <div class="mb-3">
+    <textarea name="address" id="" cols="50" rows="5"></textarea>
+  </div>
+
+  <div class="form-check">
+    <input required
+      class="form-check-input"
+      name="paymentMethod"
+      type="radio"
+      value="online"
+      id="flexRadioDefault1"
+    />
+    <label class="form-check-label" for="flexRadioDefault1">
+      Online Payment
+    </label>
+  </div>
+  <div class="form-check">
+    <input required
+      class="form-check-input"
+      name="paymentMethod"
+      type="radio"
+      value="cod"
+      id="flexRadioDefault2"
+      checked
+    />
+    <label class="form-check-label" for="flexRadioDefault2">
+      Cash on Delivery
+    </label>
+  </div>
+  <h1>Total amount is {{total}}</h1>
+  <button type="submit" class="btn btn-primary">Checkout</button>
+</form> --}}
+
+
+<div class="container-fluid">
+      <div class="container">
+        <form action="" id="checkout-form" method="post" class="loginBox">
+          <div class="d-flex">
+            <input required
+              type="text"
+              class="w-100 p-2 m-2 form-control"
+              name="name"
+              placeholder="Name"
+            />
+            <input required
+              type="number"
+              class="w-100 p-2 m-2 form-control"
+              name="phone"
+              placeholder="Phone"
+            />
+          </div>
+          <div class="d-flex">
+            <input required
+              type="number"
+              class="w-100 p-2 m-2 form-control"
+              name="pincode"
+              placeholder="Pin Code"
+            />
+            <input required
+              type="text"
+              class="w-100 p-2 m-2 form-control"
+              name="locality"
+              placeholder="Locality"
+            />
+          </div>
+          <div class="d-flex">
+            <select class="form-select w-100 p-2 m-2" name="State">
+              <option selected>State</option>
+              <option value="Kerala">Kerala</option>
+              <option value="Tamil Nadu">Tamil Nadu</option>
+            </select>
+            <input required
+              type="text"
+              class="w-100 p-2 m-2 form-control"
+              name="city" 
+              placeholder="City"
+            />
+          </div>
+          <div class="d-flex">
+            <input required
+              type="text"
+              class="w-100 p-2 m-2 form-control"
+              name="houseName"
+              placeholder="House Name"
+            />
+            <input required
+              type="text"
+              class="w-100 p-2 m-2 form-control"
+              name="landmark"
+              placeholder="Landmark "
+            />
+          </div>
+          <div class="d-flex">
+            <input required
+              type="text"
+              class="w-100 p-2 m-2 form-control"
+              name="postOffice"
+              placeholder="Post Office"
+            />
+          </div>
+          <div class="d-flex mt-2">
+            <input required type="reset" class="btn btn-danger p-2 m-2 w-100" />
+            <input required type="submit" value="Save" class="btn btn-success p-2 m-2 w-100" />
+          </div>
+        </form>
+      </div>
+    </div>
+<script>
+  $('#checkout-form').submit(function (e) { e.preventDefault();
+  console.log('submit'); console.log($('#checkout-form').serialize()); $.ajax({
+  url: '/address/add', type: 'POST', data: $('#checkout-form').serialize(),
+  success: function (data) { console.log('success'); window.location.reload(); },error:
+  function (err) { console.log(err); } }) })
+</script>
+{{!-- 
+if (data.error) {
+                         location.href = `/place-order-validationError/${data.total}/${data.error}`;
+                     }
+                     else if (data.codSuccess) {
+                         location.href = '/order-success';
+                     }
+                     else {
+                         razorpayPayment(data);
+                     }
+<h1>Total amount is : {{data.total}}</h1>
+--}}

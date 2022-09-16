@@ -1,4 +1,8 @@
 <link rel="stylesheet" href="/stylesheets/cart-style.css">
+<!-- CSS only -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet"
+  integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+
 {{> header}}
 {{!-- <span class="kart">Shoping Cart</span>
 {{#each data}}
@@ -45,31 +49,36 @@
           </tr>
         </thead>
         <tbody>
+          {{#each data}}
           <tr>
             <td scope="row">
               <div class="box ">
+                <button type="button" onclick='removeFromCart("{{this._id}}","{{this.cart._id}}")' class="btn-close"
+                  aria-label="Close"></button>
                 <div class="pro-box">
                 </div>
+
                 <div class="pro-text">
-                  <p>Table</p>
+                  <p>{{this.cart.name}}</p>
                 </div>
               </div>
             </td>
             <td>
-              <div class="in-btn">
+              {{!-- <div class="in-btn">
                 <span class="next" onclick="nextNum()"> </span>
                 <span class="prev" onclick="prevNum()"> </span>
                 <div id="box">
                 </div>
-              </div>
+              </div> --}}
+              <button type="button" id="{{this.cart._id}}{{this._id}}"
+                onclick='changeQuantity("{{this._id}}","{{this.cart._id}}","{{this.userId}}","-1")'>-</button>
+              <span id="{{this.cart._id}}">{{this.cartItems.quantity}}</span>
+              <button type="button"
+                onclick='changeQuantity("{{this._id}}","{{this.cart._id}}","{{this.userId}}","1")'>+</button>
             </td>
-            <td><span class="price">$69</span></td>
+            <td><span class="price">{{this.cart.price}}</span></td>
           </tr>
-          <tr>
-            <td scope="row">Chair</td>
-            <td>2</td>
-            <td>79</td>
-          </tr>
+          {{/each}}
         </tbody>
       </table>
     </div>
@@ -80,8 +89,9 @@
           <div class="col-6 ">
             <span class="total">Subtotal</span>
           </div>
-          <div class="col-2 price">
-            $94
+          <div class="col-2 price">$ <span id="total">
+            {{total}}
+          </span>
           </div>
         </div>
         <div class="row justify-content-between">
@@ -109,10 +119,15 @@
       <hr>
       <div class="tot d-flex justify-content-between">
         <p class="total">Total</p>
-        <p class="price">$94</p>
+        <p class="price">$ <span id="total">
+            {{total}}
+          </span></p>
       </div>
+      <form action="/checkout">
+      
       <button class="css-button-fully-rounded--black
-      button-fully-rounded--black">Proceed to checkout</button>
+      button-fully-rounded--black checkoutbtn" type="submit">Proceed to checkout</button> 
+      </form>
 
       <div class="banks mt-4 ml-4">
         <svg width="24px" height="24px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"
@@ -240,9 +255,9 @@
           <g>
           </g>
         </svg>
-        <svg width="24px" height="24px"version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-          x="0px" y="0px" width="56.48px" height="56.48px" viewBox="0 0 56.48 56.48"
-          style="enable-background:new 0 0 56.48 56.48;" xml:space="preserve">
+        <svg width="24px" height="24px" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
+          xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="56.48px" height="56.48px"
+          viewBox="0 0 56.48 56.48" style="enable-background:new 0 0 56.48 56.48;" xml:space="preserve">
           <g>
             <path d="M15.051,25.813c-1.058,0-1.869,0.34-1.869,0.34l-0.224,1.33c0,0,0.669-0.272,1.682-0.272c0.575,0,0.995,0.064,0.995,0.531
          c0,0.284-0.051,0.389-0.051,0.389s-0.453-0.037-0.663-0.037c-1.335,0-2.737,0.568-2.737,2.287c0,1.354,0.919,1.663,1.49,1.663
@@ -337,65 +352,77 @@
           </g>
         </svg> </div>
     </div>
-    </div>
+  </div>
 
 
-    <section>
-      <p class="other">Other Products You'll Love</p>
+  <section>
+    <p class="other">Other Products You'll Love</p>
 
-      <div class="products">
-        <div class="img-pro">
+    <div class="products">
+      <div class="img-pro">
 
-        </div>
-        <p class="total">Chair</p>
-        <p class="price">$69</p>
-        <button class="btn" >Add to cart</button>
       </div>
-    </section>
+      <p class="total">Chair</p>
+      <p class="price">$69</p>
+      <button class="btn">Add to cart</button>
+    </div>
+  </section>
 
 
 
 
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous">
-    </script>
-    <script type="text/javascript ">
-      var numbers = document.getElementById('box');
-      for (i = 1; i < 100; i++) {
-        var span = document.createElement('span');
-        span.textContent = i;
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous">
+  </script>
+  <script type="text/javascript ">
+  
+    var numbers = document.getElementById('box');
+    for (i = 1; i < 100; i++) {
+      var span = document.createElement('span');
+      span.textContent = i;
 
-        numbers.appendChild(span);
-      }
-      var num = numbers.getElementsByTagName('span');
-      var index = 0;
+      numbers.appendChild(span);
+    }
+    var num = numbers.getElementsByTagName('span');
+    var index = 0;
 
-      function nextNum() {
-        num[index].style.display = 'none';
-        index = (index + 1) % num.length;
-        num[index].style.display = 'initial';
-      }
+    function nextNum() {
+      num[index].style.display = 'none';
+      index = (index + 1) % num.length;
+      num[index].style.display = 'initial';
+    }
 
-      function prevNum() {
-        num[index].style.display = 'none';
-        index = (index - 1 + num.length) % num.length;
-        num[index].style.display = 'initial';
-      }
-    </script>
+    function prevNum() {
+      num[index].style.display = 'none';
+      index = (index - 1 + num.length) % num.length;
+      num[index].style.display = 'initial';
+    }
+  </script>
+  <!-- JavaScript Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous">
+  </script>
+
 </body>
 
 </html>
 {{> footer}}
 <script>
-  function changeQuantity(cartId, productId,userId, count) {
+let total = document.getElementById("total").innerHTML
+  if(total <= 0){
+    $(".checkoutbtn").attr("disabled", true);
+  } else {
+    $(".checkoutbtn").attr("disabled", false);
+  }
+  function changeQuantity(cartId, productId, userId, count) {
     let val = document.getElementById(productId).innerHTML
     val = parseInt(val)
-    
+
     console.log("changeQuantity")
     count = Number(count);
     $.ajax({
-      url:"/changeQuantity",
+      url: "/changeQuantity",
       data: {
         cart: cartId,
         user: userId,
@@ -405,27 +432,32 @@
       method: "POST",
       success: function (data) {
         console.log(data)
-      console.log(data.total.total)
-      $("#total").text(data.total)
+        console.log(data.total)
+
+        document.querySelector('#total').textContent = data.total
+        //{{!-- $("#total").text(data.total) --}}
+
+        
         val = val + count;
         document.getElementById(productId).innerHTML = val;
-            console.log(productId, val)
-        if(val <= 1) {
-      //document.getElementById(`${productId}${cartId}`).disabled = true;
-      $(`#${productId}${cartId}`).attr("disabled", true);
-    } else {
-      $(`#${productId}${cartId}`).attr("disabled", false);
-    }
+        console.log(productId, val)
+        if (val <= 1) {
+          //document.getElementById(`${productId}${cartId}`).disabled = true;
+          $(`#${productId}${cartId}`).attr("disabled", true);
+        } else {
+          $(`#${productId}${cartId}`).attr("disabled", false);
+        }
       },
       error: function (err) {
 
       }
     })
-    
+
   }
+
   function removeFromCart(cartId, productId) {
-      $.ajax({
-      url:"/removeFromCart",
+    $.ajax({
+      url: "/removeFromCart",
       data: {
         cart: cartId,
         product: productId,
@@ -438,5 +470,5 @@
 
       }
     })
-    }
-</script
+  } 
+  </script>

@@ -46,9 +46,9 @@ router.post('/login', (req, res) => {
   });
 });
 
-// router.use((req, res, next) => {
-//   req.session.adminLoggedIn ? next() : res.redirect('/admin/login');
-// });
+router.use((req, res, next) => {
+  req.session.adminLoggedIn ? next() : res.redirect('/admin/login');
+});
 
 /* GET home page. */
 router.get('/', (req, res) => {

@@ -1,4 +1,4 @@
-<div class='container d-flex justify-content-center'>
+{{!-- <div class='container d-flex justify-content-center'>
 	<form class='col-sm-6' action='/admin/add-product' method='post' enctype='multipart/form-data'>
 		<div class='mb-3'>
 			<input type='text' name='name' placeholder='Name' class='form-control' id='exampleInputEmail1'
@@ -24,4 +24,123 @@
 		</div>
 		<button type='submit' class='btn btn-primary'>Submit</button>
 	</form>
+</div> --}}
+
+
+
+
+<div class="container mt-4">
+  <div class="row d-flex justify-content-center">
+    <form action="/admin/addProduct" id="addProduct" method="post" enctype="multipart/form-data"
+      class="loginBox col-md-6">
+      <input required type="text" class="w-100 p-2 m-2 form-control" name="title" placeholder="Title" />
+      <input required type="text" class="w-100 p-2 m-2 form-control" name="description" placeholder="Description" />
+
+      <select class="form-select w-100 p-2 m-2" aria-label="Category Selection">
+        <option selected>Category</option>
+        {{#each categories}}
+        <option name="category" value="{{this._id}}">{{this.title}}</option>
+        {{/each}}
+      </select>
+      <input required type="number" class="w-100 p-2 m-2 form-control" name="price" placeholder="Price" />
+      <input required type="number" class="w-100 p-2 m-2 form-control" name="stocks" placeholder="Total Stocks" />
+      <input required accept="image/*" type="file" class="w-100 p-2 m-2 form-control" name="image" id="image"
+        onchange="readURL(this);" />
+      <input type="button" value="Crop Image" class="btn btn-primary" data-bs-toggle="modal"
+        data-bs-target="#staticBackdrop">
+      <input required type="submit" class="btn btn-success p-2 m-2 float-end" />
+    </form>
+  </div>
 </div>
+
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+  aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog  modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Modal title</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="image_container" style="width: 50vw;">
+          <img id="blah" src="#" alt="your image" />
+        </div>
+        <div id="cropped_result"></div>
+        <button id="crop_button" class="btn btn-primary">Crop</button>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Submit</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+{{!-- ========================CROPPER JS ========================= --}}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"
+  integrity="sha512-ooSWpxJsiXe6t4+PPjCgYmVfr1NS5QXJACcR/FPpsdm6kqG1FmQ2SVyg2RXeVuCRBLr0lWHnWJP6Zs1Efvxzww=="
+  crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css"
+  integrity="sha512-0SPWAwpC/17yYyZ/4HSllgaK7/gg9OlVozq8K7rf3J8LvCjYEEIfzzpnA2/SSjpGIunCSD18r3UhvDcu/xncWA=="
+  crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+
+
+<script type="text/javascript">
+  let img_data;
+  function readURL(input) {
+    img_data = input.files[0]
+    if (input.files && input.files[0]) {
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        $('#blah').attr('src', e.target.result)
+      };
+      reader.readAsDataURL(input.files[0]);
+      setTimeout(initCropper, 100);
+    }
+  }
+
+  function initCropper() {
+    var image = document.getElementById('blah');
+    var cropper = new Cropper(image, {
+      aspectRatio: 1 / 1,
+      crop: function (e) {
+        console.log(e.detail.x);
+        console.log(e.detail.y);
+      }
+    });
+    // On crop button clicked
+    document.getElementById('crop_button').addEventListener('click', function () {
+      var imgurl = cropper.getCroppedCanvas().toDataURL();
+      var img = document.createElement("img");
+      img.src = imgurl;
+      document.getElementById("cropped_result").appendChild(img);
+      cropper.getCroppedCanvas().toBlob(function (blob) {
+        var formData = new FormData();
+        formData.append('croppedImage', blob);
+        // Gets the original image data
+        let fileInputElement = document.getElementById('image');
+        // Make a new cropped image file using that blob object, image_data.name will make the new file name same as original image
+        let file = new File([blob], img_data.name, {
+          type: "image/*",
+          lastModified: new Date().getTime()
+        });
+        // Create a new container
+        let container = new DataTransfer();
+        // Add the cropped image file to the container
+        container.items.add(file);
+        // Replace the original image file with the new cropped image file
+        fileInputElement.files = container.files;
+      });
+    })
+  }
+</script>

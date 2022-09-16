@@ -1,0 +1,80 @@
+<form method="post" id="checkout-form">
+
+<input type="radio" id="cod" name="payment" value="Cash On Delivery">
+<label for="cod"> Cash On Delivery</label><br>
+<input type="radio" id="razor" name="payment" value="razor">
+<label for="razor"> Razorpay</label><br>
+<input type="radio" id="paypal" name="payment" value="paypal">
+<label for="paypal"> Paypal</label><br>
+
+
+<button type="submit" class="btn btn-primary">Proceed</button>
+</form>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <script >
+  $("#checkout-form").submit((e)=> {
+    e.preventDefault()
+    $.ajax({
+      url: '/checkout',
+      method:'post',
+      data: $('#checkout-form').serialize(),
+      success: (response) => {
+        alert(response)
+        console.log("response is :  ",response)
+        if (response.codSuccess) {
+          location.href = '/success'
+        } else {
+            razorPayment(response)
+        }
+
+      }
+    })
+  }) 
+   function razorPayment(order){
+    var options = {
+    "key": "rzp_test_7tdogKXJ5P18dm", // Enter the Key ID generated from the Dashboard
+    "amount": parseInt(order.amount), // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+    "currency": "INR",
+    "name": "Home",
+    "description": "Test Transaction",
+    "image": "https://example.com/your_logo",
+    "order_id": order.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+    "handler": function (response){
+       
+        verifyPayment(response,order)
+    },
+    "prefill": {
+        "name": "Abhishek P S",
+        "email": "abhishek@email.com",
+        "contact": "8281176558"
+    },
+    "notes": {
+        "address": "Razorpay Corporate Office"
+    },
+    "theme": {
+        "color": "#3399cc"
+    }
+};
+        var rzp1= new Razorpay(options);
+        rzp1.open();
+function verifyPayment(response,order){
+        $.ajax({
+            url: "/verifyPayment",
+            data:{
+                response,order
+            },
+            method:'post',
+            success:(response)=>{
+              alert('yeehag')
+              if(response.status){
+                console.log('yay')
+                location.href='/success';
+              }
+              else{
+                alert('Payment failed');
+              }
+            }
+        })
+}
+   }
+  </script>
