@@ -3,7 +3,7 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet"
   integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
 
-{{> header}}
+{{> user}}
 {{!-- <span class="kart">Shoping Cart</span>
 {{#each data}}
 <div class="border border-dark m-5">
@@ -32,6 +32,14 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
   <link rel="stylesheet" href="cart.css">
+  <style>
+    .kart{
+            margin-left: 25rem !important;
+    }
+    .shop-kart{
+            margin-left: 10rem !important;
+    }
+  </style>
 </head>
 
 <body>
@@ -49,15 +57,15 @@
           </tr>
         </thead>
         <tbody>
-          {{#each data}}
+          {{#each orders}}
           <tr>
             <td scope="row">
               <div class="box ">
                 <button type="button" onclick='removeFromCart("{{this._id}}","{{this.cart._id}}")' class="btn-close"
                   aria-label="Close"></button>
-                {{!-- <div class="pro-box">
-                </div> --}}
-                  <img src="/product-images/{{this.cart._id}}.jpg" alt="" style="width:4rem ;">
+                <div class="pro-box">
+                </div>
+
                 <div class="pro-text">
                   <p>{{this.cart.name}}</p>
                 </div>
@@ -90,27 +98,11 @@
             <span class="total">Subtotal</span>
           </div>
           <div class="col-2 price">$ <span id="total">
-            {{total.total}}
+            {{total}}
           </span>
           </div>
         </div>
         <div class="row justify-content-between">
-          <div class="col-6">
-            <span class="total"> Shipping</span>
-          </div>
-          <div class="col-2 price">
-            Free
-          </div>
-        </div>
-        <div class="row justify-content-between mt-3">
-          <div class="col-6">
-            <span class="total"> Coupon</span>
-          </div>
-          <div class="col-2 price">
-            -$ {{#if total.coupon_discount}}{{total.coupon_discount}}{{else}}0.00{{/if}}
-          </div>
-        </div>
-        <div class="row justify-content-between mt-3">
           <div class="col-6">
             <span class="total"> Shipping</span>
           </div>
@@ -125,22 +117,18 @@
       <div class="coupons">
         <div class="coupon-code">
 
-          <form action="" id="coupon_form" class="input-group" method="post">
-            <input required type="text" id="coupon_code" name="text" autocomplete="off" class="input">
+          <div class="input-group">
+            <input required type="text" name="text" autocomplete="off" class="input">
             <label class="user-label">Coupon Code</label>
-          <button class="botn ps-4" type="submit">Apply</button>
-          </form>
+          </div>
+          <button class="botn">Apply</button>
         </div>
       </div>
       <hr>
       <div class="tot d-flex justify-content-between">
         <p class="total">Total</p>
-        <p class="price">$ <span id="totalAmount">
-            {{#if total.total_amount}}
-              {{total.total_amount}}
-              {{else}}
-              {{total.total}}
-            {{/if}}
+        <p class="price">$ <span id="total">
+            {{total}}
           </span></p>
       </div>
       <form action="/checkout">
@@ -438,6 +426,7 @@ let total = document.getElementById("total").innerHTML
   function changeQuantity(cartId, productId, userId, count) {
     let val = document.getElementById(productId).innerHTML
     val = parseInt(val)
+
     console.log("changeQuantity")
     count = Number(count);
     $.ajax({
@@ -453,11 +442,11 @@ let total = document.getElementById("total").innerHTML
         console.log(data)
         console.log(data.total)
 
+        document.querySelector('#total').textContent = data.total
         //{{!-- $("#total").text(data.total) --}}
-        document.querySelector('#total').textContent = data.total.total
-        document.querySelector('#totalAmountd').textContent = data.total.total_amount
+
+        
         val = val + count;
-        alert(val)
         document.getElementById(productId).innerHTML = val;
         console.log(productId, val)
         if (val <= 1) {
@@ -490,22 +479,4 @@ let total = document.getElementById("total").innerHTML
       }
     })
   } 
-  </script>
-
-  <script>
-    $("#coupon_form").submit(function (e) {
-      e.preventDefault();
-      let coupon_code = $("#coupon_code").val()
-      $.ajax({
-        url: `/coupon/apply/${coupon_code}`,
-        data:{coupon_code : coupon_code},
-        method: "POST",
-        success: function (data) {
-          window.location.reload()
-        },error: function (err) {
-          alert(err)
-          console.log(err)
-        }
-      })
-    })
   </script>

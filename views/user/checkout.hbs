@@ -10,132 +10,116 @@
 	crossorigin='anonymous'
 ></script>
 <style>
-   .bg_purple 
-   { 
-   background-color: #9155fd; 
-   }
-   .bg_purple:hover
-   {
-   background-color: #9155fd;
-   }
-   .purple
-   {
-   color: #766edb;
-   } 
-   .a-none 
-   {
-   text-decoration: none; 
-   }
-   input[type="radio"] {
-   width: 18px; height: 18px; 
-   }
-   .breadcrumb-item + .breadcrumb-item::before {
-   margin: 0 1vw; content: var(--bs-breadcrumb-divider, " > ");
-   }
-   .breadcrumb-item {
-   font-size: large; font-weight: 700; 
-   }
-   .address { word-wrap:break-word; /* overflow-wrap: break-word; */ 
-   } @media screen and (min-width:768px)
-   { .options { margin: auto 0; } 
-   .outer{ padding: 1rem 3rem; } 
-   }
-   @media
-   screen and (max-width: 768px) 
-   { .options { margin: 1rem 2.6rem; } .outer{
-   padding: 1rem 1rem; } }
+	.bg_purple { background-color: #9155fd; } .bg_purple:hover { background-color:
+	#9155fd; } .purple { color: #766edb; } .a-none { text-decoration: none; }
+	input[type="radio"] { width: 18px; height: 18px; } .breadcrumb-item +
+	.breadcrumb-item::before { margin: 0 1vw; content:
+	var(--bs-breadcrumb-divider, " > "); } .breadcrumb-item { font-size: large;
+	font-weight: 700; } .purplec{ text-decoration: none; } .address {
+	word-wrap:break-word; /* overflow-wrap: break-word; */ } @media screen and
+	(min-width:768px) { .options { margin: auto 0; } .outer{ padding: 1rem 3rem; }
+	} @media screen and (max-width: 768px) { .options { margin: 1rem 2.6rem; }
+	.outer{ padding: 1rem 1rem; } }
 </style>
-<form action='/address' method='post'>
-	<div class='container pt-5 d-flex flex-wrap'>
-		<div class='col-lg-9 col-sm-12 col-12 outer'>
-			<nav aria-label='breadcrumb'>
-				<ol class='breadcrumb py-4'>
-					<li class='breadcrumb-item' aria-current='page'>
-						Address
-					</li>
-					{{! 
+
+<div
+	style='border: 1px solid #111 ; margin-top:3rem;margin-left:1rem;margin-right:1rem '
+>
+	<form action='/address' method='post'>
+		<div class='container pt-5 d-flex flex-wrap'>
+			<div class='col-lg-9 col-sm-12 col-12 outer'>
+				<nav aria-label='breadcrumb'>
+					<ol class='breadcrumb py-4'>
+						<li class='breadcrumb-item' aria-current='page'>
+							Address
+						</li>
+						{{! 
                <li class="breadcrumb-item text-muted">Shipping</li>
                }}
-					<li class='breadcrumb-item text-muted'>
-						Payment
-					</li>
-				</ol>
-			</nav>
-			<!-- ================================================================================ -->
-			{{#each address}}
-				<div class='d-flex justify-content-between mb-5 w-100 flex-wrap'>
-					<div class='d-flex col-12 col-sm-8'>
-						<input
-							required
-							required
-							type='radio'
-							name='address'
-							value='{{this._id}}'
-							class='my-auto me-4 col-1 col-sm-1'
-						/>
-						<div class='col-11 col-sm-11'>
-							<h4>{{this.name}}</h4>
-							<p class='mb-0 address'>{{this.houseName}},
-								{{this.locality}},
-								{{this.city}},
-								{{this.pincode}}
-							</p>
-							<p class='mb-0'>
-								<span class='text-muted'>Contact - </span>{{this.phone}}
-							</p>
+						<li class='breadcrumb-item text-muted'>
+							Payment
+						</li>
+					</ol>
+				</nav>
+				<!-- ================================================================================ -->
+				{{#each address}}
+					<div class='d-flex justify-content-between mb-5 w-100 flex-wrap'>
+						<div class='d-flex col-12 col-sm-8'>
+							<input
+								required
+								required
+								type='radio'
+								name='address'
+								value='{{this._id}}'
+								class='my-auto me-4 col-1 col-sm-1'
+							/>
+							<div class='col-11 col-sm-11'>
+								<h4>{{this.name}}</h4>
+								<p class='mb-0 address'>{{this.houseName}},
+									{{this.locality}},
+									{{this.city}},
+									{{this.pincode}}
+								</p>
+								<p class='mb-0'>
+									<span class='text-muted'>Contact - </span>{{this.phone}}
+								</p>
+							</div>
+						</div>
+						<div
+							class='d-flex col-12 col-sm-4 options'
+							id=''
+							style='width: 10rem'
+						>
+
 						</div>
 					</div>
-					<div
-						class='d-flex col-12 col-sm-4 options'
-						id=''
-						style='width: 10rem'
-					>
-						<a href=' /Address/Edit' class='text-dark a-none'>Edit</a>
-						<span class='mx-3'>|</span>
-						<a href=' /Address/Remove' class='text-danger a-none'> Remove</a>
-					</div>
+				{{/each}}
+				<!-- ================================================================================ -->
+				<!-- ================================================================================ -->
+
+				<a href='/address/add' class='purplec'>CREATE NEW ADDRESS</a>
+			</div>
+			<div
+				class='col-lg-3 col-sm-12 col-12 p-4 mt-5 border border-1'
+				style='height: 500px ; margin-bottom:2rem'
+			>
+				<h3 class='mb-4'>Order Summary</h3>
+				<div class='d-flex justify-content-between w-100'>
+					<p>Price</p>
+					<p>₹{{total.total}}</p>
 				</div>
-			{{/each}}
-			<!-- ================================================================================ -->
-			<!-- ================================================================================ -->
-			<hr />
-			<a href='/address/add' class='purplec'>+ CREATE NEW ADDRESS</a>
+				<div class='d-flex justify-content-between w-100'>
+					<p>Discount</p>
+					<p>₹0.00</p>
+				</div>
+				<div class='d-flex justify-content-between w-100'>
+					<p>Shipping</p>
+					<p class='purple' style='color:#111;font-weight:bold;'>Free</p>
+				</div>
+				<div class='d-flex justify-content-between w-100'>
+					<p>Coupon Applied</p>
+					<p>₹{{#if
+							total.coupon_discount
+						}}{{total.coupon_discount}}{{else}}0.00{{/if}}</p>
+				</div>
+				<hr />
+				<div class='d-flex justify-content-between w-100'>
+					<p class='purple' style='color: #111; font-weight:bold'>TOTAL</p>
+					<p class='purple' style='color: #111; font-weight:bold'>₹{{#if
+							total.total_amount
+						}}
+							{{total.total_amount}}
+						{{else}}
+							{{total.total}}
+						{{/if}}</p>
+				</div>
+
+				<button
+					class='btn bg_black text-white w-100 mt-3'
+					style='background-color: black;'
+					type='submit'
+				>CONTINUE TO PAYMENT</button>
+			</div>
 		</div>
-		<div
-			class='col-lg-3 col-sm-12 col-12 p-4 mt-5 border border-1'
-			style='height: 500px'
-		>
-			<h3 class='mb-4'>Order Summary</h3>
-			<div class='d-flex justify-content-between w-100'>
-				<p>Price</p>
-				<p>₹{{total}}</p>
-			</div>
-			<div class='d-flex justify-content-between w-100'>
-				<p>Discount</p>
-				<p>₹0.00</p>
-			</div>
-			<div class='d-flex justify-content-between w-100'>
-				<p>Shipping</p>
-				<p class='purple'>Free</p>
-			</div>
-			<div class='d-flex justify-content-between w-100'>
-				<p>Coupon Applied</p>
-				<p>₹0.00</p>
-			</div>
-			<hr />
-			<div class='d-flex justify-content-between w-100'>
-				<p class='purple'>TOTAL</p>
-				<p class='purple'>₹{{total}}</p>
-			</div>
-			<p>Estimated Delivery by <span class='fw-bold'>01 Aug 2022</span></p>
-			<input
-				type='text'
-				name='coupon'
-				class='form-control'
-				placeholder='Coupon Code'
-			/>
-			<button class='btn bg_purple text-white w-100 mt-3' type='submit'>CONTINUE
-				TO PAYMENT</button>
-		</div>
-	</div>
-</form>
+	</form>
+</div>

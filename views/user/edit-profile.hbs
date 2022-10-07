@@ -1,0 +1,57 @@
+<link rel="stylesheet" href="/stylesheets/edit-profile.css">
+
+{{> user}}
+<form action="/edit-profile/{{users._id}} " method="post" style="margin-left: 10rem;">
+
+
+			<div class='col-lg-8 mx-auto mt-5'>
+				<div class='card'>
+					<div class='card-body'>
+						<div class='row mb-3'>
+							<div class='col-sm-3'>
+								<h6 class='mb-0'>Full Name</h6>
+							</div>
+							<div class='col-sm-9 text-secondary'>
+								<input type='text' class='form-control' name="username" />
+							</div>
+						</div>
+						<div class='row mb-3'>
+							<div class='col-sm-3'>
+								<h6 class='mb-0'>Email</h6>
+							</div>
+							<div class='col-sm-9 text-secondary'>
+								<input
+									type='text'
+									class='form-control'
+									name="email"
+								/>
+							</div>
+						</div>
+						<div class='row mb-3'>
+							<div class='col-sm-3'>
+								<h6 class='mb-0'>Phone</h6>
+							</div>
+							<div class='col-sm-9 text-secondary'>
+								<input
+									type='text'
+									class='form-control'
+									name="phone"
+								/>
+							</div>
+						</div>
+						
+						<div class='row'>
+							<div class='col-sm-3'></div>
+							<div class='col-sm-9 text-secondary'>
+								<input
+									type='submit'
+									class='btn btn-primary px-4'
+									value="Edit"
+								/>
+							</div>
+						</div>
+					</div>
+				</div>
+				
+			</div>
+		</form>

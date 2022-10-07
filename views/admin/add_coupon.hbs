@@ -1,7 +1,7 @@
 <div class='container d-flex justify-content-center' style="margin-top: 4rem; ">
   <form
     class='col-sm-6'
-    action='/admin/add-category'
+    action='/admin/coupon/add'
     method='post'
     enctype='multipart/form-data'
   >
@@ -9,7 +9,7 @@
       <input
         type='text'
         name='name'
-        placeholder='Category Name'
+        placeholder='Coupon Name'
         class='form-control'
         id='exampleInputEmail1'
       />
@@ -21,6 +21,22 @@
         placeholder='Description'
         class='form-control'
         id='exampleInputEmail1'
+      />
+    </div>
+    <div class='mb-3'>
+      <input
+        type='text'
+        name='coupon_code'
+        placeholder='Coupon Code'
+        class='form-control'
+      />
+    </div>
+    <div class='mb-3'>
+      <input
+        type='number'
+        name='discount'
+        placeholder='Coupon Discount ₹'
+        class='form-control'
       />
     </div>
     {{!-- <div class='mb-3'>

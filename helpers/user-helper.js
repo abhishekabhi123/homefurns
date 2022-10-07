@@ -5,7 +5,11 @@ const {
   ORDER_COLLECTION,
   ADDRESS_COLLECTION,
   ORDER_ADDRESS_COLLECTION,
+  COUPON_COLLECTION,
 } = require('../config/collections');
+
+
+
 
 
 const {
@@ -20,7 +24,10 @@ require('dotenv').config();
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 const client = require('twilio')(accountSid, authToken);
-var Razorpay = require('razorpay')
+
+
+var Razorpay = require('razorpay');
+const createHttpError = require('http-errors');
 var instance = new Razorpay({
   key_id: 'rzp_test_7tdogKXJ5P18dm',
   key_secret: 'HeGvw4UrwZ1tP1Tb1qCxyRkU',
@@ -171,7 +178,7 @@ module.exports = {
         });
     });
   },
-  getProduct: (id) => {
+    getProduct: (id) => {
     return new Promise((resolve, reject) => {
       get()
         .collection(PRODUCT_COLLECTION)
@@ -248,6 +255,8 @@ module.exports = {
                   userId: ObjectId(userId._id)
                 }, {
                   $push: {
+                    coupon_code: "",
+                    coupon_discount: 0,
                     cartItems: productObj
                   }
                 }, {
@@ -263,6 +272,9 @@ module.exports = {
       }
     });
   },
+
+
+  
   getCart: (userId) => {
     console.log(userId);
     return new Promise((resolve, reject) => {
@@ -380,7 +392,9 @@ module.exports = {
                       $toInt: '$cart.price'
                     }]
                   }
-                }
+                },
+                coupon_discount: {$first: "$coupon_discount"},
+                coupon_code : {$first : "$coupon_code"},
               }
             }, {
               $unset: ["_id"]
@@ -389,8 +403,12 @@ module.exports = {
           ])
           .toArray()
           .then((data) => {
-            console.log(data[0]);
-            let val = data[0] ? data[0].total : '0';
+            if(data[0]){
+
+              data[0].total_amount = parseInt(data[0].total) - parseInt(data[0].coupon_discount)
+              console.log("cart totalAmt : ",data[0]);
+            }
+            let val = data[0] ? data[0] : '0';
             resolve(val);
           });
       } catch (error) {
@@ -483,19 +501,22 @@ module.exports = {
       let status = order.paymentMethod === 'cod' ? 'placed' : 'pending'
       let orderObj = {
         deliveryDetails: {
-          name: order.name,
+          name: order.username,
           phone: order.phone,
           address: order.address,
         },
         userId: ObjectId(order.userId),
-        paymentMethod: order.paymentMethod,
+        paymentMethod: order.payment,
         products: products,
-        totalAmount: total,
+        subTotal : total.total,
+        totalAmount: total.total_amount,
+        coupon_discount: total.coupon_discount,
+        coupon_code : total.coupon_code,
         paymentStatus: status,
         date: new Date(),
       }
       get().collection(ORDER_COLLECTION).insertOne(orderObj).then((cart) => {
-        get().collection(CART_COLLECTION).deleteOne({
+        get().collection(CART_COLLECTION).deleteOne({              
           userId: ObjectId(order.userId)
         }).then((response) => {
           resolve(cart)
@@ -503,7 +524,7 @@ module.exports = {
       })
     })
   },
-  getOrders: (userId) => {
+  getOrders: (userId) => {   
     return new Promise((resolve, reject) => {
       get()
         .collection(ORDER_COLLECTION)
@@ -541,7 +562,7 @@ module.exports = {
           // {$project: {productDetails: 1, paymentMethod: 1,  status: 1, products: 1, date: 1}},
         ]).toArray()
         .then((data) => {
-          // console.log(data);
+          console.log( 'data is',data);
           resolve(data);
         });
     })
@@ -693,7 +714,7 @@ module.exports = {
   generateRazorpay: (orderId, total) => {
     return new Promise((resolve, reject) => {
       var options = {
-        amount: total * 100, // amount in the smallest currency unit
+        amount: total.total * 100, // amount in the smallest currency unit
         currency: "INR",
         receipt: "" + orderId
       };
@@ -717,23 +738,121 @@ module.exports = {
       console.log(hmac, details['response[razorpay_signature]'])
       if (hmac == details['response[razorpay_signature]']) {
         resolve()
-      }
-      else{ 
+      } else {
         reject('Payment failed');
       }
 
     })
   },
-  changePaymentStatus:(orderId)=>{
-    return new Promise((resolve,reject)=>{
-      get().collection(ORDER_COLLECTION).updateOne({_id:ObjectId(orderId)},
-      {
-        $set:{
-          status:'placed'
+  changePaymentStatus: (orderId) => {
+    return new Promise((resolve, reject) => {
+      get().collection(ORDER_COLLECTION).updateOne({
+        _id: ObjectId(orderId)
+      }, {
+        $set: {
+          status: 'placed'
         }
-      }).then(()=>{
+      }).then(() => {
         resolve();
       })
+    })
+  },
+  updateprofile: (id, data) => {
+    console.log("this",id,data);
+    return new Promise((resolve, reject) => {
+      const {
+        username,
+        phone,
+        email
+      } = data;           
+      get()
+        .collection(USER_COLLECTION)
+        .updateOne({
+          _id: ObjectId(id)
+        }, {
+          $set: {
+            username: username,
+            phone: phone,
+            email: email,
+          },
+        })
+        .then((result) => {
+          console.log(result)
+          resolve({
+            status: true
+          });
+        });
+    });
+  },
+   getUserDetails: (id) => {
+    return new Promise(async (resolve, reject) => {
+      get()
+        .collection(USER_COLLECTION)
+        .findOne({
+          _id: ObjectId(id)
+        })
+        .then((data) => {
+          resolve(data);
+        });
+    });
+  },
+  validateCoupon: (COUPON_CODE) => {
+    return new Promise(async (resolve, reject) => {
+      console.log(COUPON_CODE);
+      get().collection(COUPON_COLLECTION).findOne({coupon_code: COUPON_CODE}).then((coupon) => {
+        if(coupon) {
+          resolve(coupon)
+        } else {
+          reject(createHttpError.NotFound());
+        }
+      })
+    })
+  },
+  addCoupon: (userId, coupon_code, discount) => {
+    return new Promise((resolve, reject) => {
+      console.log(userId, discount);
+      get().collection(CART_COLLECTION).updateOne({userId: ObjectId(userId)},{
+        $set: {coupon_discount: discount, coupon_code : coupon_code},
+      }).then((data) => {
+        console.log(data);
+        resolve();
+      }).catch((err) => {
+        console.log(err);
+      })
+    })
+  },
+  getDeleteAddress: (addressId) => {
+    return new Promise((resolve, reject) => {
+      get().collection(ADDRESS_COLLECTION).deleteOne({_id: ObjectId(addressId)}).then(() => resolve());
+    })
+  },
+  editAddress: (addressId, body) => {
+    return new Promise((resolve, reject) => {
+      const {
+        name,
+        phone,
+        locality,
+        city,
+        pincode,
+        state,
+        houseName,
+        landmark,
+        postOffice
+      } = body;
+      let addressObj = {
+        name: name,
+        phone: phone,
+        locality: locality,
+        city: city,
+        state: state,
+        pincode: Number(pincode),
+        houseName: houseName,
+        landmark: landmark,
+        postOffice: postOffice,
+      };
+      get().collection(ADDRESS_COLLECTION).updateOne({_id: ObjectId(addressId)}, {
+        $set: addressObj,
+      }).then(() => resolve());
     })
   }
 }

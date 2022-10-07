@@ -1,7 +1,64 @@
-{{> user}}
+{{>user}}
 
-Lorem ipsum dolor sit amet consectetur adipisicing elit. Beatae enim repellendus quia sapiente veritatis eius. Vel reiciendis quae aut tempore. Error sint cupiditate, saepe illo et nam aperiam perferendis ratione?
-Dignissimos dicta, earum maxime odit sit voluptatem a iste excepturi ex possimus ab facere delectus! Provident esse at, quia eius non temporibus alias, harum recusandae adipisci rem, nemo obcaecati vel.
-Architecto consequuntur eligendi facere voluptates omnis eveniet iusto hic odit ut dicta perferendis, repellat id repudiandae quasi quia ipsum expedita laudantium, ducimus excepturi harum. Amet explicabo laboriosam ducimus rem vitae.
-Deleniti molestias aperiam hic, ducimus cum officia minus quam ab veniam quod ipsam vero et culpa alias rerum nesciunt deserunt? Doloribus distinctio a quasi non doloremque blanditiis voluptatum esse natus.
-Nam adipisci, qui minus iusto quam laudantium possimus quod perferendis amet. Inventore mollitia temporibus voluptatibus? Omnis, aspernatur, doloribus, accusamus non impedit ipsum dolore officiis molestias illo ratione amet facilis quos?
+<link rel='stylesheet' href='/stylesheets/orders.css' />
+<!-- CSS only -->
+
+<link rel='stylesheet' type='text/css' href='https://cdn.datatables.net/1.12.1/css/jquery.dataTables.css' />
+<style>
+.tub{
+        margin-left: 15rem !important;
+}
+</style>
+</head>
+
+<body>
+    <p class='orders'>ORDERS</p>
+    <table class='table table-borderless order-table m-5 tub' style='border: 1px solid #000' id='table_id'  >
+        <thead>
+            <tr>
+                <th scope='col'>Image</th>
+                <th scope='col'>Name</th>
+                <th scope='col'>Price</th>
+                <th scope='col'>Date</th>
+                <th scope='col'>Payment</th>
+                <th scope='col'>Status</th>
+                <th scope='col'>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each orders}}
+            <tr>
+
+                <td><img src='/product-images/{{this.productDetails._id}}.jpg' alt=''
+                        style='width: 100px; height: 100px' /></td>
+                <td>{{this.productDetails.name}}</td>
+                <td>₹{{this.productDetails.price}}</td>
+                <td>{{this.date}}</td>
+                <td>{{this.paymentMethod}}</td>
+                <td>{{this.products.status}}</td>
+                <td>
+                    {{#ifEquals this.products.status 'cancelled'}}
+                    🚫
+                    {{else}}
+                    <a href=ble-ber/cancel/{{this._id}}/{{this.productDetails._id}}' class='btn'>Cancel</a>
+                    {{/ifEquals}}
+                </td>
+            </tr>
+
+            {{/each}}
+        </tbody>
+    </table>
+
+    <!-- JavaScript Bundle with Popper -->
+
+    <script type='text/javascript' charset='utf8' src='https://cdn.datatables.net/1.12.1/js/jquery.dataTables.js'>
+    </script>
+
+</body>
+<script>
+    $(document).ready(function () {
+        $('#table_id').DataTable();
+    });
+</script>
+
+</html>

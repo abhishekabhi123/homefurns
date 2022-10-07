@@ -1,0 +1,46 @@
+
+<link rel='stylesheet' href='/stylesheets/styles.css' />
+    <!-- CSS only -->
+{{>admin_sidebar}}
+<section>
+  <div class="container">
+    <div class="container">
+      <div class="row">
+        <a href="/admin/coupon/add" class="mt-5"><div
+            class="float-end btn btn-success"
+          >Add Coupon</div></a>
+      </div>
+    </div>
+    <table class="table" style="margin-left: 22rem;">
+      <thead>
+        <tr>
+      
+          <th class="" scope="col">Title</th>
+          <th class="" scope="col">Description</th>
+          <th class="" scope="col">code</th>
+          <th class="" scope="col">discount</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each coupon}}
+          <tr>
+          
+            <td class="">{{this.name}}</td>
+            <td class="">{{this.description}}</td>
+            <td class="">{{this.coupon_code}}</td>
+            <td class="">{{this.discount}}</td>
+          
+            <td class="">
+              <a class="btn btn-primary" href="/admin/edit-product/{{this._id}}">Edit</a>
+              <a
+                class="btn btn-danger"
+                href="/admin/delete-product/{{this._id}}"
+                onclick="return confirm('Are you sure you want to delete {{this.name}} product?');"
+              >Delete</a>
+            </td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+</section>

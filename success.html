@@ -1,28 +1,220 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="sucess.css">
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/sucess.css">
+
+  <title>Document</title>
 </head>
 <body>
-    <div class="modal">
-        <div id="success-icon">
-          <div></div>
+<form method="post" id="checkout-form">
+<div class="container">
+  <div class="option">
+    <input type="radio" name="payment" id="cod" value="Cash on Deliver">
+    <label for="cod" aria-label="Silver">
+      <span></span>
+      
+      Cash On Delivery
+      
+      <div class="card card--white card--sm">
+        <div class="card__chip"></div>
+        <div class="card__content">
+          <div class="card__text">
+            <div class="text__row">
+              <div class="text__loader"></div>
+              <div class="text__loader"></div>
+            </div>
+            <div class="text__row">
+              <div class="text__loader"></div>
+              <div class="text__loader"></div>
+            </div>
+          </div>
+          <div class="card__symbol">
+            <span></span>
+            <span></span>
+          </div>
         </div>
-        <svg id="close-modal" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 10 10">
-          <line x1="1" y1="-1" x2="9" y2="11" stroke-width="2.5" />
-          <line x1="9" y1="-1" x2="1" y2="11" stroke-width="2.5" />
-        </svg>
-        <h1><strong>Success!</strong></h1>
-        <svg class="progress" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 100 4.5">
-          <rect height="4.5" width="100" rx="2" ry="2" />
-        </svg>
-        <p class="points">Order placed</p>
-        <hr>
-        <p class="message"><a href="/">Back to Home page</a></p>
       </div>
+    </label>
+  </div>
+  
+  <div class="option">
+    <input type="radio" name="payment" id="razor" value="razor">
+    <label for="razor" aria-label="Royal blue">
+      <span></span>
+      
+     Razor Pay
+      
+      <div class="card card--blue card--sm">
+        <div class="card__chip"></div>
+        <div class="card__content">
+          <div class="card__text">
+            <div class="text__row">
+              <div class="text__loader"></div>
+              <div class="text__loader"></div>
+            </div>
+            <div class="text__row">
+              <div class="text__loader"></div>
+              <div class="text__loader"></div>
+            </div>
+          </div>
+          <div class="card__symbol">
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+      </div>
+    </label>
+  </div>
+  
+  <div class="option">
+    <input type="radio" name="payment" id="paypal" value="paypal">
+    <label for="paypal"aria-label="Dark grey">
+      <span></span>
+      
+      Paypal
+      
+      <div class="card card--dark card--sm">
+        <div class="card__chip"></div>
+        <div class="card__content">
+          <div class="card__text">
+            <div class="text__row">
+              <div class="text__loader"></div>
+              <div class="text__loader"></div>
+            </div>
+            <div class="text__row">
+              <div class="text__loader"></div>
+              <div class="text__loader"></div>
+            </div>
+          </div>
+          <div class="card__symbol">
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+      </div>
+    </label>
+  </div>
+</div>
+<button type="submit" class="btn btn-primary">Proceed</button>
+</form>
 </body>
+<script
+	src='https://www.paypal.com/sdk/js?client-id=AR4Tqi-cEKBtfFuTK48-BCmNdRK3cg7APb2x1p5JAJOCsHO1xyMAxue983dlmsVTks5LCWvbhkPcwIcQ&currency=USD'
+></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <script >
+  $("#checkout-form").submit((e)=> {
+    e.preventDefault()
+    $.ajax({
+      url: '/checkout',
+      method:'post',
+      data: $('#checkout-form').serialize(),
+      success: (response) => {
+       
+        console.log("response is :  ",response)
+        if (response.codSuccess) {
+          location.href = '/success'
+        } else {
+            razorPayment(response)
+        }
+
+      }
+    })
+  }) 
+   function razorPayment(order){
+    var options = {
+    "key": "rzp_test_7tdogKXJ5P18dm", // Enter the Key ID generated from the Dashboard
+    "amount": parseInt(order.amount), // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+    "currency": "INR",
+    "name": "Home",
+    "description": "Test Transaction",
+    "image": "https://example.com/your_logo",
+    "order_id": order.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+    "handler": function (response){
+       
+        verifyPayment(response,order)
+    },
+    "prefill": {
+        "name": "Abhishek P S",
+        "email": "abhishek@email.com",
+        "contact": "8281176558"
+    },
+    "notes": {
+        "address": "Razorpay Corporate Office"
+    },
+    "theme": {
+        "color": "#3399cc"
+    }
+};
+        var rzp1= new Razorpay(options);
+        rzp1.open();
+function verifyPayment(response,order){
+        $.ajax({
+            url: "/verifyPayment",
+            data:{
+                response,order
+            },
+            method:'post',
+            success:(response)=>{
+             
+              if(response.status){
+                console.log('yay')
+                location.href='/success';
+              }
+              else{
+                alert('Payment failed');
+              }
+            }
+        })
+}
+   }
+  </script>
+
+     <script>
+      paypal
+        .Buttons({
+          // Sets up the transaction when a payment button is clicked
+          createOrder: function (data, actions) {
+            return fetch("/api/orders", {
+              method: "post",
+              // use the "body" param to optionally pass additional order information
+              // like product ids or amount
+            })
+              .then((response) => response.json())
+              .then((order) => order.id);
+          },
+          // Finalize the transaction after payer approval
+          onApprove: function (data, actions) {
+            return fetch(`/api/orders/${data.orderID}/capture`, {
+              method: "post",
+            })
+              .then((response) => response.json())
+              .then((orderData) => {
+                // Successful capture! For dev/demo purposes:
+                console.log(
+                  "Capture result",
+                  orderData,
+                  JSON.stringify(orderData, null, 2)
+                );
+                var transaction =
+                  orderData.purchase_units[0].payments.captures[0];
+                alert(
+                  "Transaction " +
+                    transaction.status +
+                    ": " +
+                    transaction.id +
+                    "\n\nSee console for all available details"
+                );
+                // When ready to go live, remove the alert and show a success message within this page. For example:
+                // var element = document.getElementById('paypal-button-container');
+                // element.innerHTML = '<h3>Thank you for your payment!</h3>';
+                // Or go to another URL:  actions.redirect('thank_you.html');
+              });
+          },
+        })
+        .render("#paypal-button-container");
+    </script>
 </html>

@@ -1,62 +1,243 @@
-<h1>Order details page</h1>
-{{#with orderDetails}}
-<h1>{{deliveryDetails.name}}</h1>
-<h1>{{deliveryDetails.phone}}</h1>
-<h1>{{deliveryDetails.address}}</h1>
-<h1>{{userId}}</h1>
-<h1>{{paymentMethod}}</h1>
-<h1 id="displayStatus">{{status}}</h1>
-{{!-- <h1>{{date}}</h1>
-<h1>{{user._id}}</h1>
-<h1>{{user.username}}</h1>
-<h1>{{user.email}}</h1>
-<h1>{{isCancelled}}</h1> --}}
-{{#each products}}
-<h1>{{this.productId}}</h1>
-<h1>{{this.quantity}}</h1>
-<h1>{{this.total}}</h1>
-<h1 id="{{this.productId}}">{{this.status}}</h1>
-<a href="/admin/order/cancel/{{../_id}}/{{this.productId}}" class="btn btn-primary"
-  onclick="return confirm('Do you sure want to cancel this order?');">Cancel</a>
-<select id="status{{this.productId}}" onchange="changeStatus('{{../_id}}','{{this.productId}}')"
-  {{#ifEquals this.status "cancelled"}} disabled {{/ifEquals }} class="form-select" aria-label="Default select example">
-  <option selected>
-    {{#ifEquals this.status "cancelled"}}
-    Product Cancelled
-    {{else}}
-    Change transit
-    {{/ifEquals}}
-  </option>
-  <option value="Order Placed">Order placed</option>
-  <option value="Dispatched">Dispatched</option>
-  <option value="On Transist">On Transist</option>
-  <option value="Out for Delivery">Out for Delivery</option>
-  <option value="Delivered">Delivered</option>
-</select>
-
-{{/each}}
-{{/with}}
-
-<script>
-  function changeStatus(orderId, productId) {
-    console.log(orderId, productId)
-    let val = $(`#status${productId}`).val()
-    console.log(val)
-    $.ajax({
-      type: "POST",
-      url: "/admin/order/changeStatus",
-      data: {
-        orderId: orderId,
-        productId: productId,
-        status: val,
-      },
-      success: function (data) {
-        console.log('success')
-        $(`#${productId}`).text(val)
-      },
-      error: function (error) {
-        console.log(error)
-      }
-    })
-  }
+<style> 
+    @media screen and (min-width: 768px) { .outer { padding: 3rem; } } @media 
+    screen and (max-width: 768px) { .outer { padding: 0.3rem; } .proImg { width: 
+    70% !important; margin-left: 10% !important; } .title { font-size: 1rem; 
+    word-wrap: break-word; } .desc { font-size: 0.8rem; word-wrap: break-word; } } 
+    @media screen and (max-width: 576px) { .paymentMethod { margin-top: 1.5rem 
+    !important; } } @media screen and (min-width: 370px) and (max-width: 576px) { 
+    .address { width: 60% !important; } } 
+</style>
+<div class="container-fluid h-100"> 
+  <div class="row d-flex justify-content-center align-items-center h-100"> 
+      <div class="card border border-0"> 
+        <div class="card-body p-0"> 
+          <div class="row g-0"> 
+            <div class="col-lg-12 col-sm-12 col-12 outer"> 
+              <div class="outer"> 
+                <div 
+                  class="d-flex justify-content-between align-items-center mb-5" 
+                > 
+                  <h1 
+                    class="fw-bold mb-0 text-black" 
+                  >{{orderDetails.user.[0].username}}</h1> 
+                  {{!-- <h6 class="mb-0 text-muted">{{orders.length}} items</h6> --}} 
+                </div> 
+                <hr class="my-4" /> 
+                {{#with orderDetails}} 
+                  <div class="d-flex justify-content-between flex-wrap"> 
+                    {{#each address}} 
+                    <div 
+                      class="col-12 col-sm-5 col-md-6 col-lg-6 col-xl-5 col-xxl-4 my-auto address" 
+                    > 
+                      <h5 class="text-dark title">{{this.name}}</h5> 
+                      <p class="text-muted mb-0 desc">{{this.houseName}}, 
+                        {{this.postOffice}} 
+                        P.O., 
+                        {{this.locality}}, 
+                        {{this.city}}, 
+                        {{this.landmark}}, Pincode : 
+                        {{this.pincode}}</p> 
+                      <small>Phone : {{this.phone}}</small> 
+                    </div> 
+                    {{/each}} 
+                    <div 
+                      class="col-12 col-sm-3 col-md-3 col-lg-3 col-xl-2 col-xxl-2 my-auto paymentMethod" 
+                    > 
+                      <h6 class="mb-0"><strong>Payment Method:</strong> 
+                        <br />{{this.payment_method}}</h6> 
+                    </div> 
+                    <div 
+                      class="col-12 col-sm-3 col-md-3 col-lg-3 col-xl-2 col-xxl-2 my-auto paymentMethod" 
+                    > 
+                      <h6 class="mb-0"><strong>Payment Status:</strong></h6> 
+                        <select name="paymentStatus" class="border border-0 " id="paymentStatus" onchange="changePaymentStatus('{{_id}}')"> 
+                            <option value="" id="paymentStatusSelected">{{payment_status}}</option> 
+                            <option value="Pending">Pending</option> 
+                            <option value="Received">Received</option> 
+                            <option value="Refunded">Refunded</option> 
+                          </select> 
+                    </div> 
+                  </div> 
+                  <hr class="my-4" /> 
+                  {{! ==========================================ORDER DETAILS ========================================== }} 
+                  {{#each orderDetails}} 
+                    <div class="d-flex"> 
+                      <div 
+                        class="col-sm-4 col-md-4 col-lg-5 col-xl-3 col-4 m-auto" 
+                      > 
+                        <a 
+                          href="/product/{{this.details._id}}" 
+                          class="text-decoration-none" 
+                        ><img 
+                            src="/product_images/{{this._id}}-1.{{this.img_ext}}" 
+                            class="imgCrop m-auto ms-4 proImg" 
+                            class="card-img-bottom" 
+                            alt="product Image" 
+                          /></a> 
+                      </div> 
+                      <div 
+                        class="d-flex justify-content-between col-8 col-sm-8 flex-wrap my-auto" 
+                      > 
+                        <div 
+                          class="col-10 col-sm-8 col-md-10 col-lg-10 col-xl-5 my-auto" 
+                        > 
+                          <a 
+                            href="/product/{{this._id}}" 
+                            class="text-decoration-none" 
+                          ><h5 
+                              class="text-dark title" 
+                            >{{this.title}}</h5></a> 
+                          <a 
+                            href="/product/{{this._id}}" 
+                            class="text-decoration-none" 
+                          ><p 
+                              class="text-muted mb-0 desc" 
+                            >{{this.desc}}</p></a> 
+                          <small class="text-muted mb-0 desc">Ordered 
+                            on : {{../date}}</small> 
+                        </div> 
+                        <div 
+                          class="col-sm-2 col-md-4 col-lg-4 col-xl-2 my-auto d-none d-lg-block" 
+                        > 
+                          <div class="d-flex"> 
+                          {{#ifCond this.cd_price '<' this.max_price}} 
+                          <h6 class="mb-3">₹{{this.cd_price}}</h6> 
+                            <h6 class="mb-3 ms-3"><del>₹{{this.max_price}}</del></h6> 
+                            {{else}} 
+                            <h6 class="mb-3 ms-3">₹{{this.max_price}}</h6> 
+                          {{/ifCond}} 
+                          </div> 
+                          <h6 class="mb-0">Qty : {{index_of ../products @index "quantity"}}</h6> 
+                        </div> 
+                        <div 
+                          class="col-sm-2 col-md-4 col-lg-4 col-xl-2 my-auto d-none d-lg-block" 
+                        > 
+                          <select name="status" class="dropdown" {{#ifEquals (index_of ../products @index "status") "cancelled"}} disabled {{/ifEquals}} id="status{{index_of ../products @index "productId"}}" onchange="changeStatus('{{../_id}}','{{index_of ../products @index 'productId'}}')"> 
+                             <option selected> 
+                              {{#ifEquals (index_of ../products @index "status") "cancelled"}} 
+                              Cancelled 
+                              {{else}} 
+                              {{index_of ../products @index "status"}} 
+                              {{/ifEquals}} 
+                            </option> 
+                            <option value="Order Placed">Order placed</option> 
+                            <option value="Dispatched">Dispatched</option> 
+                            <option value="On Transist">On Transist</option> 
+                            <option value="Out for Delivery">Out for Delivery</option> 
+                            <option value="Delivered">Delivered</option> 
+                          </select> 
+                        </div> 
+                         
+                        <i 
+                          class="fa-solid fa-angle-right d-block d-lg-none col-sm-2 col-md-2 col-lg-2 col-xl-2 my-auto" 
+                        ></i> 
+                        <div class="d-flex justify-content-center"> 
+                          {{#ifEquals (index_of ../products @index "status") "cancelled"}} 
+                            <a 
+                              href="#" 
+                              class="btn btn-primary m-auto" 
+                              style="opacity: 0.5;" 
+                            >Cancel</a> 
+                          {{else}} 
+                            <a 
+                              href="/admin/order/cancel/{{../_id}}/{{this._id}}" 
+                              class="btn btn-primary m-auto" 
+                              style="height: 2rem;" 
+                              onclick="return confirm('Do you sure want to cancel this order?');" 
+                            >Cancel</a> 
+                          {{/ifEquals}} 
+                        </div> 
+                      </div> 
+                    </div> 
+                    <hr class="my-4" /> 
+                  {{/each}} 
+                {{/with}} 
+                <div class="pt-5"> 
+                  <div class=" w-100 " style="height: 20rem;"> 
+                    <div class="col-12  float-end"> 
+                      <h3 class="mb-4">Order Summary</h3> 
+                      {{#with orderDetails}} 
+                      {{#each orderDetails}} 
+                      <div class="d-flex justify-content-between w-100"> 
+                        <p class="w-50 overflow-none">{{this.title}}</p> 
+                        <p id="price">₹{{index_of ../products @index "max_price"}}</p> 
+                      </div> 
+                      {{/each}} 
+                      {{/with}} 
+                      <div class="d-flex justify-content-between w-100"> 
+                        
+<p>Discount</p>
+                        
+<p>- ₹{{#if orderDetails.total_discount}}{{orderDetails.total_discount}}{{else}}0.00{{/if}}</p>
+                      </div> 
+                      <div class="d-flex justify-content-between w-100"> 
+                        
+<p>Shipping</p>
+                        <p class="text-purple">Free</p> 
+                      </div> 
+                      <div class="d-flex justify-content-between w-100"> 
+                        
+<p>Coupon Applied</p>
+                        
+<p>- ₹{{#if orderDetails.coupon}}{{orderDetails.coupon}}{{else}}0.00{{/if}}</p>
+                      </div> 
+                      <hr /> 
+                      <div class="d-flex justify-content-between w-100"> 
+                        <p class="text-purple">TOTAL</p> 
+                        <p class="text-purple" id="total">₹{{orderDetails.total_amount}}</p> 
+                      </div> 
+                    </div> 
+                  </div> 
+                  <hr class="mb-4" /> 
+                  <h6 class="mb-0"><a href="/admin/orders" class="text-body"><i 
+                        class="fas fa-long-arrow-alt-left me-2" 
+                      ></i>Back to Orders</a></h6> 
+                </div> 
+              </div> 
+            </div> 
+          </div> 
+        </div> 
+      </div> 
+    </div> 
+</div> 
+<script> 
+    function changeStatus(orderId, productId) { 
+    console.log(orderId, productId); 
+    let val = $(`#status${productId}`).val(); 
+    console.log(val); 
+    $.ajax({ 
+      type: "POST", 
+      url: "/admin/order/changeStatus", 
+      data: { 
+        orderId: orderId, 
+        productId: productId, 
+        status: val, 
+      }, 
+      success: function(data) { 
+        console.log('success') 
+        $(`#${productId}`).text(val) 
+      }, 
+      error: function(error) { 
+        console.log(error) 
+      } 
+    }) 
+  } 
+  function changePaymentStatus( orderId ) { 
+    let val = $("#paymentStatus").val(); 
+    $.ajax({ 
+      type: "POST", 
+      url: "/admin/order/paymentStatus/change", 
+      data: { 
+        orderId: orderId, 
+        status: val, 
+      }, 
+      success: function(data) { 
+        console.log('success',val) 
+        $("#paymentStatusSelected").text(val) 
+      }, 
+      error: function(error) { 
+        console.log(error) 
+      } 
+    }) 
+  } 
 </script>

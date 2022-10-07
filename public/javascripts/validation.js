@@ -178,10 +178,10 @@ $(document).ready(function () {
             maxlength:4
           }
         },    
-        messages: {  
+        messages: {   
     
           email: {
-            email: "Please enter a valid Email id",
+            email: "Please enter a valid Email id", 
           },
           password: {
             minlength: "Please enter a password more than 5 characters",

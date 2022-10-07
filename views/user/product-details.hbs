@@ -1,28 +1,44 @@
      <link rel="stylesheet" href="/stylesheets/prductstyles.css">
      {{> header}}
-     <!-- Navigation-->
-
+     {{!-- <a href="#" class="wish" id="wishh">
+         <!-- Navigation-->
+         <img src='/images/heart-svgrepo-com.svg' alt='search' class='heart' />
+     </a> --}}
      <!-- Product section-->
+    
      {{#product}}
      <section class="py-5">
          <div class="container px-4 px-lg-5 my-5">
              <div class="row gx-4 gx-lg-5 align-items-center">
-                 <div class="col-md-6"><img class="card-img-top mb-5 mb-md-0" id="image" src="/product-images/{{this._id}}.jpg"
-                         alt="..." /></div>
+                 <div class="col-md-6"><img class="card-img-top mb-5 mb-md-0" id="image"
+                         src="/product-images/{{this._id}}.jpg" alt="..." /></div>
                  <div class="col-md-6">
                      <div class="small mb-1">SKU: BST-498</div>
                      <h1 class="display-5 fw-bolder">{{this.name}}</h1>
                      <div class="fs-5 mb-5">
-                         <span class="text-decoration-line-through">${{this.price}}.00</span>
-                         <span>$40.00</span>
+                         {{#ifCond this.mrp '>' this.price }}
+                         <div class="d-flex">
+                             <span>${{this.price}}</span>
+                             <span class="text-decoration-line-through ms-3">${{this.mrp}}.00</span>
+                             {{!-- <p class="ms-3 mt-auto text-success fw-bold" style="margin-bottom: 0.3rem;">{{total_discount}}% off</p> --}}
+                         </div>
+                         {{else}}
+                         <span>${{this.price}}</span>
+                         {{/ifCond}}
                      </div>
                      <p class="lead">{{this.description}}</p>
                      <div class="d-flex">
                          <input class="form-control text-center me-3" id="inputQuantity" type="num" value="1"
                              style="max-width: 3rem" />
-                         <button class="btn btn-outline-dark flex-shrink-0" type="button">
+                         <button class="btn btn-outline-dark flex-shrink-0" onclick="addToCart('{{this._id}}')"
+                             type="button">
                              <i class="bi-cart-fill me-1"></i>
-                             <a href="/addToCart/{{this._id}}">Add to cart</a>
+                             <span>Add to cart</span>
+                         </button>
+                          <button class="btn btn-outline-dark flex-shrink-0 ml-4" onclick="addToWishlist('{{this._id}}')"
+                             type="button">
+                             <i class="bi-cart-fill me-1"></i>
+                             <span>Add to Wishlist</span>
                          </button>
                      </div>
                  </div>
@@ -153,6 +169,86 @@
              $("#image").imagezoomsl()
          })
      </script>
+     <link rel="stylesheet" type="text/css"
+         href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+     </head>
+     <script>
+         function addToCart(productId) {
+             toastr.options = {
+                 "closeButton": true,
+                 "newestOnTop": false,
+                 "progressBar": true,
+                 "positionClass": "toast-bottom-center",
+                 "preventDuplicates": false,
+                 "onclick": null,
+                 "showDuration": "300",
+                 "hideDuration": "1000",
+                 "timeOut": "5000",
+                 "extendedTimeOut": "1000",
+                 "showEasing": "swing",
+                 "hideEasing": "linear",
+                 "showMethod": "fadeIn",
+                 "hideMethod": "fadeOut"
+             }
+             $.ajax({
+                 url: `/addtocart/${productId}`,
+                 data: {},
+                 method: "GET",
+                 success: function () {
+                     toastr.success("Added to cart!");
+                 }
+             })
+         }
+     </script>
+
+<script>
+
+function addToWishlist(productId) {
+             toastr.options = {
+                 "closeButton": true,
+                 "newestOnTop": false,
+                 "progressBar": true,
+                 "positionClass": "toast-bottom-center",
+                 "preventDuplicates": false,
+                 "onclick": null,
+                 "showDuration": "300",
+                 "hideDuration": "1000",
+                 "timeOut": "5000",
+                 "extendedTimeOut": "1000",
+                 "showEasing": "swing",
+                 "hideEasing": "linear",
+                 "showMethod": "fadeIn",
+                 "hideMethod": "fadeOut"
+             }
+             $.ajax({
+                 url: `/addtoWishlist/${productId}`,
+                 data: {},
+                 method: "GET",
+                 success: function () {
+                     toastr.success("Added to Wishlist!");
+                 }
+             })
+         }
+
+
+
+
+
+
+
+
+
+
+</script>
+
+
+
+
+
+
+
+         
      <!-- Footer-->
      {{> footer}}
      <!-- Bootstrap core JS-->
@@ -160,4 +256,5 @@
      <!-- Core theme JS-->
      <script src="/javascripts/productjs.js"></script>
 
+    
      {{/product}}

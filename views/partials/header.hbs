@@ -1,6 +1,6 @@
 <link rel='stylesheet' href='/stylesheets/header.css' />
 
-<nav class='navbar navbar-expand-lg bg-light navigations'>
+<nav class='navbar navbar-expand-lg bg-light navigations' >
   <div class='container-fluid'>
     <img src='/images/home_logo-removebg-preview.png' class='logo' alt='logo' />
 
@@ -9,23 +9,18 @@
       <span class='navbar-toggler-icon'></span>
     </button>
     <div class='collapse navbar-collapse main-nav' id='navbarNav'>
-      <ul class='navbar-nav nav-ul'>
+      <ul class='navbar-nav nav-ul' style="margin-left: 14rem;">
         <li class='nav-item nav-list'>
           <a class='nav-link active home' aria-current='page' href='/'>Home</a>
         </li>
         <li class='nav-item'>
           <a class='nav-link text-dark' href='/shop'>Shop</a>
         </li>
-        <li class='nav-item'>
-          <a class='nav-link text-dark' href='/#'>Contact</a>
-        </li>
-        <li class='nav-item'>
-          <a class='nav-link text-dark' href='#'>About </a>
-        </li>
+        
         <div class='icons'>
-          <img src='/images/search-svgrepo-com.svg' alt='search' class='nav-logo' />
+         
           <img src='/images/heart-svgrepo-com.svg' alt='search' class='nav-logo' />
-         <a href="/account"> <img src='/images/user-svgrepo-com.svg' alt='user' class='nav-logo' /></a>
+         <a href="/dashboard"> <img src='/images/user-svgrepo-com.svg' alt='user' class='nav-logo' /></a>
           <a href="/cart"><img src='/images/cart-svgrepo-com.svg' alt='user' class='nav-logo' /></a>
 
         </div>
@@ -36,10 +31,10 @@
 
   {{#if user}}
   {{user.username}}
- <div class="dropdown ">
-  <button class="btn  dropdown-toggle drop" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false"> {{this.username}}
+ <div class="dropdown " >
+  <button class="btn  dropdown-toggle drop" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false" style="margin-right:7rem !important;"> {{this.username}}
   </button>
-  <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+  <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1" style=" margin-left: -7rem;">
     <li><a class="dropdown-item" href="/orders">Orders</a></li>
     <li><a class="dropdown-item" href="/logout">Logout</a></li>
   </ul>
@@ -154,3 +149,7 @@
 
 <script src="/javascripts/validation.js"></script>
 <script src="/javascripts/main.js"></script>
+
+
+
+

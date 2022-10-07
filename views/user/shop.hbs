@@ -1,10 +1,10 @@
 {{> header}}
 
 <section class="shop d-flex ">
-<div class="categories mt-5 mx-3">
-  <p class="cate">Categories</p>
-  <ul class="shop-list">
-    {{!-- <li><a href="#"> Cabinets</a></li>
+  <div class="categories mt-5 mx-3">
+    <p class="cate">Categories</p>
+    <ul class="shop-list">
+      {{!-- <li><a href="#"> Cabinets</a></li>
     <li><a href="#"> Accesories</a></li>
     <li><a href="#"> Armchairs</a></li>
     <li><a href="#"> Bookcases</a></li>
@@ -13,59 +13,89 @@
     <li><a href="#"> Decor</a></li>
     <li><a href="#"> Ottomans</a></li>
     <li><a href="#"> Floorlamps</a></li> --}}
-    {{#each categories}}
-    <li><a href="/categories/{{this._id}}"> {{this.name}}</a></li>
-    {{/each}}
-  </ul>
-</div>
+      {{#each categories}}
+      <li><a href="/categories/{{this._id}}"> {{this.name}}</a></li>
+      {{/each}}
+    </ul>
+  </div>
 
-<div class="container-fluid d-flex justify-content-end mt-5 mb-3">
-  {{!-- <div class='col-md-2 bg-danger'></div> --}}
-  {{!-- <div class='container col-md-10'> --}}
+  <div class="container-fluid d-flex justify-content-end mt-5 mb-3">
+    {{!-- <div class='col-md-2 bg-danger'></div> --}}
+    {{!-- <div class='container col-md-10'> --}}
     {{!-- <div class='container'> --}}
-      <div class='row card-group g-3' style="
+    <div class='row card-group g-3' style="
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr;column-gap:2rem
 ">
-        {{#each products}}
-          {{!-- <div class='' > --}}
-            
-            <div class='card p-2 col-3 my-2 ml-3 mr-2' style="height:auto;width: auto; border:1px solid;">
-              <a href='/product/{{this._id}}'>
-                <img
-                  class='card-img-top'
-                  src='/product-images/{{this._id}}.jpg'
-                  {{! src = "product-images\62ffcc2fd48521c3d3f58734.jpg" }}
-                  width='200px'
-                  height='200px'
-                  style='overflow: hidden'
-                  alt='Card image cap'
-                />
-              </a>
-              <div
-                class='rounded-circle position-absolute d-flex justify-content-center'
-              >
-                <p class='m-auto'>75%</p>
-              </div>
-              <div class='card-body' style='height: 166px;width: 17rem;>
-                <span class='card-title' style='width: 35rem;'>
-                  {{this.name}}
-                </span>
-                <p class='card-text' style="text-align: center;">{{this.price}} $</p>
-                <div class='row'>
-                  <a href='/addtocart/{{this._id}}' class='btn btn-sm '>Add to cart</a>
-                  <a href='#' class='btn btn-sm ' >Buy now</a>
-                </div>
-              </div>
-            </div>
-          {{!-- </div> --}}
-        {{/each}}
+      {{#each products}}
+      {{!-- <div class='' > --}}
+
+      <div class='card p-2 col-3 my-2 ml-3 mr-2' style="height:auto;width: auto; border:1px solid;">
+        <a href='/product/{{this._id}}'>
+          <img class='card-img-top' src='/product-images/{{this._id}}.jpg'
+            {{! src = "product-images\62ffcc2fd48521c3d3f58734.jpg" }} width='200px' height='200px'
+            style='overflow: hidden' alt='Card image cap' />
+        </a>
+        <div class='rounded-circle position-absolute d-flex justify-content-center'>
+          <p class='m-auto'>{{this.discount}}%</p>
+        </div>
+        <div class='card-body' style='height: 166px;width: 17rem;'>
+                <span class=' card-title' style='width: 35rem;'>
+          {{this.name}}
+          </span>
+          <p class='card-text' style="text-align: center;">{{this.price}} $</p>
+          <div class='row'>
+            <span onclick="addToCart('{{this._id}}')" class='btn btn-sm cart'>Add to cart</span>
+            <a href='/checkout/{{this._id}}' class='btn btn-sm  '>Buy now</a>
+          </div>
+        </div>
       </div>
+      {{!-- </div> --}}
+      {{/each}}
+    </div>
     {{!-- </div> --}}
-  {{!-- </div> --}}
+    {{!-- </div> --}}
   </div>
-  
-{{!-- </div> --}}
+
+  {{!-- </div> --}}
 </section>
 
 {{> footer}}
+
+
+<script src="https://code.jquery.com/jquery-3.6.1.min.js"
+  integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+
+<link rel="stylesheet" type="text/css" 
+     href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+</head>
+     <script>
+        function addToCart(productId){
+            toastr.options = {
+    "closeButton": true,
+    "newestOnTop": false,
+    "progressBar": true,
+    "positionClass": "toast-bottom-center",
+    "preventDuplicates": false,
+    "onclick": null,
+    "showDuration": "300",
+    "hideDuration": "1000",
+    "timeOut": "5000",
+    "extendedTimeOut": "1000",
+    "showEasing": "swing",
+    "hideEasing": "linear",
+    "showMethod": "fadeIn",
+    "hideMethod": "fadeOut"
+  }
+            $.ajax({
+                url: `/addtocart/${productId}`,
+                data:{},
+                method: "GET",
+                success: function () {
+                    toastr.success("Added to cart!");
+                }
+            })
+        }
+     </script>
+     

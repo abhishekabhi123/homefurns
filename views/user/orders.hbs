@@ -1,48 +1,4 @@
-{{!-- <section>
-	<div class='container'>
-		<div class='container'>
-			<div class='row'>
-				<a href='/admin/add-product' class='mt-5'><div
-						class='float-end btn btn-success'
-					></div></a>
-			</div>
-		</div>
-		<table class='table'>
-			<thead>
-				<tr>
-					<th class='' scope='col'>#</th>
-					<th class='' scope='col'>Name</th>
-					<th class='' scope='col'>Address</th>
-					<th class='' scope='col'>Total</th>
-					<th class='' scope='col'>Date</th>
-					<th class='' scope='col'>Payment</th>
-					<th class='' scope='col'>Status</th>
-					<th class='' scope='col'>Option</th>
-				</tr>
-			</thead>
-			<tbody>
-				{{#each orders}}
-					<tr>
-						<th class='' scope='row'>{{@index}}</th>
-						<td class=''>{{this.user.username}}</td>
-						<td class=''>{{this.deliveryDetails.address}}</td>
-						<td class=''>{{this.totalAmount}}</td>
-						<td> {{this.date}}</td>
-						<td> {{this.paymentMethod}}</td>
-						<td>{{this.status}}</td>
-						<td class=''>
-							<a
-								class='btn btn-primary'
-								href='/admin/order/details/{{this._id}}'
-							>Details</a>
-						</td>
-					</tr>
-				{{/each}}
 
-			</tbody>
-		</table>
-	</div>
-</section> --}}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -81,7 +37,11 @@
                 
                 <td><img src="/product-images/{{this.productDetails._id}}.jpg" alt="" style="width: 100px; height: 100px" /></td>
                 <td>{{this.productDetails.name}}</td>
-                <td>₹{{this.productDetails.price}}</td>
+                {{#ifCond this.totalAmount '<' this.subTotal}}
+                <td><del class="mx-2">₹{{this.subTotal}}</del>₹{{this.totalAmount}}</td>
+                {{else}}
+                <td>₹{{this.subTotal}}</td>
+                {{/ifCond}}
                 <td>{{this.date}}</td>
                 <td>{{this.paymentMethod}}</td> 
                 <td>{{this.products.status}}</td>
@@ -90,28 +50,7 @@
                 <a href="/order/cancel/{{this._id}}/{{this.productDetails._id}}" class="btn">Cancel</a>
                 {{/ifEquals}} </td>
             </tr>
-            {{!-- <tr>
-                <th scope="row">
-                    <img src="" alt="" style="width: 10px; height: 10px" />
-                </th>
-                <td>dav</td>
-                <td>$45</td>
-                <td>06/05/2022</td>
-                <td>COD</td>
-                <td>Completed</td>
-                <td><button>Cancel</button></td>
-            </tr>
-            <tr>
-                <th scope="row">
-                    <img src="" alt="" style="width: 10px; height: 10px" />
-                </th>
-                <td>Otto</td>
-                <td>$45</td>
-                <td>06/05/2022</td>
-                <td>COD</td>
-                <td>Completed</td>
-                <td><button>Cancel</button></td>
-            </tr> --}}
+            
 			{{/each}}
         </tbody>
     </table>

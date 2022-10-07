@@ -1,148 +1,205 @@
+<link rel='stylesheet' href='/stylesheets/styles.css' />
 
-  <link rel='stylesheet' href='/stylesheets/styles.css' />
+
+
+  {{>admin_sidebar}}
+
+
+<section id='interface' style="margin-top: -5rem;">
   
+  <h3 class='i-name'>Dashboard</h3>
+  <div class='values'>
+    <div class='val-box'>
+      <i class='fa fa-users'></i>
+      <div>
+        <h3>{{count}}</h3>
+        <span>New users</span>
+      </div>
+    </div>
+    <div class='val-box'>
+      <i class='fa fa-shopping-cart'></i>
+      <div>
+        <h3>{{order}}</h3>
+        <span>Total Orders</span>
+      </div>
+    </div>
+    {{!-- <div class='val-box'>
+      <i class='fa-solid fa-hashtag'></i>
+      <div>
+        <h3>{{amountOrder}}</h3>
+        <span>Products Sell</span>
+      </div>
+    </div> --}}
+    <div class='val-box'>
+      <i class='fa fa-dollar-sign'></i>
+      <div>
+        <h3>{{total}}</h3>
+        <span>This month</span>
+      </div>
+    </div>
+  </div>
+  <div>
+
+  </div>
+  
+    <div class="graph w-100  justify-content-center" style="height: 80vh;">
+      <h3 style="text-align: center; margin-top: 2rem;">Weekly Report</h3>
+      <canvas id="week" class="m-auto" style="width:60rem;max-width:600px;height:25rem;"></canvas>
+        <h3 style="text-align: center; margin-top: 2rem;">Daily report</h3>
+      <canvas id="daily" class="m-auto" style="width:60rem;max-width:600px;height:25rem;"></canvas>
+        <h3 style="text-align: center; margin-top: 2rem;">Category report</h3>
+      <canvas id="category" class="m-auto" style="width:60rem;max-width:600px;height:25rem;"></canvas>
+    </div>
+
+</section>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
+  crossorigin="anonymous"></script>
+<script>
+  $('#menu-btn').click(function () {
+    $('#menu').toggleClass("active")
+  })
 
 
-  <section id='menu'>
-    <div class='logo'>
-      <img src='/images/home_logo-removebg-preview.png' alt='logo' />
-      <h2>HOME</h2>
-    </div>
-    <div class='items'>
-      <li><i class='fa-solid fa-chart-pie'></i><a
-          href='/dashboard'
-        >Dashboard</a></li>
-      <li><i class='fa-solid fa-user'></i><a href='/admin'>Admin account</a></li>
-      <li><i class='fa-solid fa-users'></i><a href='/admin/users'>Edit users</a></li>
-      <li>
-        <i class='fa-solid fa-cart-arrow-down'></i><a
-          href='/admin/products'
-        >Edit produts</a>
-      </li>
-      <li>
-        <i class='fa-solid fa-cart-arrow-down'></i><a
-          href='/admin/categories'
-        >Categories</a>
-      </li>
-    </div>
-  </section>
-  <section id='interface'>
-    <div class='navigation'>
-      <div class='n1'>
-        <div>
-          <i id='menu-btn' class='fas fa-bars'></i>
-        </div>
-        <div class='search'>
-          <i class='fa fa-search'></i>
-          <input type='text' placeholder='Search' />
-        </div>
-      </div>
-      <div class='profile'>
-        <i class='fa fa-bell'></i>
-        <a href='/admin/logout'>
-          <img
-            src='/images/PinClipart.com_playing-video-games-black_1486972.png'
-          /></a>
-      </div>
-    </div>
-    <h3 class='i-name'>Dashboard</h3>
-    <div class='values'>
-      <div class='val-box'>
-        <i class='fa fa-users'></i>
-        <div>
-          <h3>8,267</h3>
-          <span>New users</span>
-        </div>
-      </div>
-      <div class='val-box'>
-        <i class='fa fa-shopping-cart'></i>
-        <div>
-          <h3>200,521</h3>
-          <span>Total Orders</span>
-        </div>
-      </div>
-      <div class='val-box'>
-        <i class='fa-solid fa-hashtag'></i>
-        <div>
-          <h3>215,542</h3>
-          <span>Products Sell</span>
-        </div>
-      </div>
-      <div class='val-box'>
-        <i class='fa fa-dollar-sign'></i>
-        <div>
-          <h3>$677.89</h3>
-          <span>This month</span>
-        </div>
-      </div>
-    </div>
-    <dir class='board'>
-      <table width='100%'>
-        <thead>
-          <tr>
-            <td>Name</td>
-            <td>Title</td>
-            <td>Status</td>
-            <td>Role</td>
-            <td>options</td>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class='people'>
-              <img
-                src='/images/PinClipart.com_playing-video-games-black_1486972.png'
-                alt=''
-              />
-              <div class='people-de'>
-                <h5>Jhon</h5>
-                <p>jhon@email.com</p>
-              </div>
-            </td>
-            <td class='people-des'>
-              <h5>software</h5>
-              <p>web dev</p>
-            </td>
-            <td class='active'>
-              <p>Active</p>
-            </td>
-            <td class='role'>
-              <p>owner</p>
-            </td>
-            <td class='edit'>
-              <a href='#'>Edit</a>
-            </td>
-          </tr>
-          <tr>
-            <td class='people'>
-              <img
-                src='/images/PinClipart.com_playing-video-games-black_1486972.png'
-                alt=''
-              />
-              <div class='people-de'>
-                <h5>Don</h5>
-                <p>don@email.com</p>
-              </div>
-            </td>
-            <td class='people-des'>
-              <h5>Banking</h5>
-              <p>Manager</p>
-            </td>
-            <td class='active'>
-              <p>Active</p>
-            </td>
-            <td class='role'>
-              <p>owner</p>
-            </td>
-            <td class='edit'>
-              <a href='#'>Edit</a>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </dir>
-  </section>
-  <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
-  <script>
-    $('#menu-btn').click(function () { $('#menu').toggleClass("active") })
-  </script>
+
+  $(document).ready(function () {
+    $.ajax({
+      url: `/admin/stats/week`,
+      method: "GET",
+      success: function (response) {
+        console.log(response);
+        var xValues = response.date;
+        var yValues = response.totalAmount;
+        new Chart("week", {
+          type: "pie",
+          data: {
+            labels: xValues,
+            datasets: [{
+              fill: false,
+              lineTension: 0,
+              label: 'Sales',
+              backgroundColor: [
+      'rgb(255, 99, 132)',
+      'rgb(54, 162, 235)',
+      'rgb(255, 205, 205)'
+    ],
+              //borderColor: 'rgb(255, 99, 132)',
+              data: yValues
+            }]
+          },
+          options: {
+            legend: {
+              display: false
+            },
+            scales: {
+              yAxes: [{
+                ticks: {
+                  min: 6,
+                  max: 16
+                }
+              }],
+            }
+          }
+        });
+      },
+      error: function (err) {
+        console.log(err);
+      }
+    })
+  })
+</script>
+<script>
+  $('#menu-btn').click(function () {
+    $('#menu').toggleClass("active")
+  })
+
+
+
+  $(document).ready(function () {
+    $.ajax({
+      url: `/admin/stats/daily`,
+      method: "GET",
+      success: function (response) {
+        console.log(response);
+        var xValues = response.date;
+        var yValues = response.totalAmount;
+        new Chart("daily", {
+          type: "line",
+          data: {
+            labels: xValues,
+            datasets: [{
+              fill: false,
+              lineTension: 0,
+              label: 'Sales',
+              backgroundColor: 'rgb(255, 99, 132)',
+              borderColor: 'rgb(255, 99, 132)',
+              data: yValues
+            }]
+          },
+          options: {
+            legend: {
+              display: false
+            },
+            scales: {
+              yAxes: [{
+                ticks: {
+                  min: 6,
+                  max: 16
+                }
+              }],
+            }
+          }
+        });
+      },
+      error: function (err) {
+        console.log(err);
+      }
+    })
+  })
+
+  $(document).ready(function () {
+     var xValues = ['Fri Sep 02 2022',
+    'Sun Sep 04 2022',
+    'Mon Sep 05 2022',
+    'Thu Sep 15 2022',
+    'Fri Sep 16 2022',
+    'Sat Sep 17 2022',
+    'Tue Sep 20 2022',
+    'Wed Sep 21 2022',
+    'Sat Sep 24 2022',
+    'Sat Sep 24 2022',
+    'Tue Sep 27 2022',
+    'Tue Sep 27 2022']
+        var yValues = [ 3170, 35455, 15285,
+    283, 17497,  1197,
+    1890,  594, 1550,
+    1148,  770,   7090]
+        new Chart("category", {
+          type: "line",
+          data: {
+            labels: xValues,
+            datasets: [{
+              fill: false,
+              lineTension: 0,
+              label: 'Sales',
+              backgroundColor: 'rgb(255, 99, 132)',
+              borderColor: 'rgb(255, 99, 132)',
+              data: yValues
+            }]
+          },
+          options: {
+            legend: {
+              display: false
+            },
+            scales: {
+              yAxes: [{
+                ticks: {
+                  min: 6,
+                  max: 16
+                }
+              }],
+            }
+          }
+        });
+  })
+</script>

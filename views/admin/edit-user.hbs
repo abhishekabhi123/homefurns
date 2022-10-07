@@ -1,4 +1,4 @@
-<div class="container d-flex justify-content-center"  >
+<div class="container d-flex justify-content-center " style="margin-top: 4rem;"  >
   <form class="col-sm-6" action="/admin/edit-user/{{user._id}}" method="post">
   <div class="mb-3">
     <input type="text" name="username" value="{{user.username}}" placeholder="Username" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
@@ -6,9 +6,7 @@
   <div class="mb-3">
     <input type="text" name="email" value="{{user.email}}" placeholder="Email" class="form-control" id="exampleInputexampleInputPassword1">
   </div>
-  <div class="mb-3">
-    <input type="text" name="password"  placeholder="Password" class="form-control" id="exampleInputPassword1">
-  </div>
+  
   {{!-- <div class="mb-3">
     <img src="/user-images/{{user._id}}.jpg" width="100px" height="100px" alt="user-image" srcset="">
     <input type="file" name="image" value="" class="form-control" id="exampleInput" class="form-control" id="exampleInputPasswordexampleInputPassword1">

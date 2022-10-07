@@ -6,6 +6,16 @@ var logger = require('morgan');
 var hbs = require('hbs');
 var fileUpload = require('express-fileupload');
 var session = require('express-session');
+// var handle=require('express-handlebars');
+
+// var method = hbs.create({});
+
+hbs.registerHelper('unlessEquals', function(arg1, arg2, options) {
+  return (arg1 != arg2) ? options.fn(this) : options.inverse(this);
+});
+hbs.registerHelper('ifEquals', function(arg1, arg2, options) {
+  return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
+});
 
 var indexRouter = require('./routes/index');
 var adminRouter = require('./routes/admin');
@@ -32,7 +42,7 @@ app.use(
     resave: true,
     saveUninitialized: true,
     cookie:{
-      maxAge:86400
+      maxAge:86400000
     }
   })
 );
@@ -46,6 +56,33 @@ connect((err) => {
 
 hbs.registerHelper('ifEquals', function(arg1, arg2, options) {
   return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
+});
+hbs.registerHelper('ifCond', function (v1, operator, v2, options) {
+    console.log("ifCond", v1, v2, operator);
+    switch (operator) {
+        case '==':
+            return (v1 == v2) ? options.fn(this) : options.inverse(this);
+        case '===':
+            return (v1 === v2) ? options.fn(this) : options.inverse(this);
+        case '!=':
+            return (v1 != v2) ? options.fn(this) : options.inverse(this);
+        case '!==':
+            return (v1 !== v2) ? options.fn(this) : options.inverse(this);
+        case '<':
+            return (v1 < v2) ? options.fn(this) : options.inverse(this);
+        case '<=':
+            return (v1 <= v2) ? options.fn(this) : options.inverse(this);
+        case '>':
+            return (v1 > v2) ? options.fn(this) : options.inverse(this);
+        case '>=':
+            return (v1 >= v2) ? options.fn(this) : options.inverse(this);
+        case '&&':
+            return (v1 && v2) ? options.fn(this) : options.inverse(this);
+        case '||':
+            return (v1 || v2) ? options.fn(this) : options.inverse(this);
+        default:
+            return options.inverse(this);
+    }
 });
 
 app.use((req,res,next)=>{

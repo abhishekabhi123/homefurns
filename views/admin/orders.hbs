@@ -1,50 +1,207 @@
-{{!-- <section>
-	<div class='container'>
-		<div class='container'>
-			<div class='row'>
-				<a href='/admin/add-product' class='mt-5'><div
-						class='float-end btn btn-success'
-					></div></a>
-			</div>
-		</div>
-		<table class='table'>
-			<thead>
-				<tr>
-					<th class='' scope='col'>#</th>
-					<th class='' scope='col'>Name</th>
-					<th class='' scope='col'>Address</th>
-					<th class='' scope='col'>Total</th>
-					<th class='' scope='col'>Date</th>
-					<th class='' scope='col'>Payment</th>
-					<th class='' scope='col'>Status</th>
-					<th class='' scope='col'>Option</th>
-				</tr>
-			</thead>
-			<tbody>
-				{{#each orders}}
-					<tr>
-						<th class='' scope='row'>{{@index}}</th>
-						<td class=''>{{this.user.username}}</td>
-						<td class=''>{{this.deliveryDetails.address}}</td>
-						<td class=''>{{this.totalAmount}}</td>
-						<td> {{this.date}}</td>
-						<td> {{this.paymentMethod}}</td>
-						<td>{{this.status}}</td>
-						<td class=''>
-							<a
-								class='btn btn-primary'
-								href='/admin/order/details/{{this._id}}'
-							>Details</a>
-						</td>
-					</tr>
-				{{/each}}
 
-			</tbody>
-		</table>
-	</div>
-</section> --}}
+<section>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="container d-flex justify-content-end mt-0 mb-5">
+                {{!-- <a href="/admin/add-user" class="btn btn-success mx-3">Add User</a> --}}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <table id="exampleOrderAdmin" class="table table-striped" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th scope="col">Date</th>
+                            <th class="text-center" scope="col">Address</th>
+                            <th class="text-center" scope="col">Pincode</th>
+                            <th class="text-center" scope="col">Mobile</th>
+                            <th class="text-center" scope="col">Amount</th>
+                            <th class="text-center" scope="col">Payment</th>
+                            <th class="text-center" scope="col">Current Status</th>
+                            <th class="text-center notExport" scope="col">Options</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#each orders}}
+                        <tr>
+                            <td>{{this.date}}</td>
+                            <td class="text-center">{{this.deliveryDetails.address}}</td>
+                            <td class="text-center">{{this.deliveryDetails.pincode}}</td>
+                            <td class="text-center">{{this.deliveryDetails.mobile}}</td>
+                            <td class="text-center">{{this.totalAmount}}</td>
+                            <td class="text-center">{{this.paymentMethod}}</td>
+                            <td class="text-center">{{this.status}}</td>
+                            {{#ifEquals this.status 'cancelled'}}
+                            <td class="text-center">{{this.status}}</td>
+                            {{/ifEquals}}
+                            {{#unlessEquals this.status 'cancelled'}}
+                            <td class="text-center">
+                                {{#ifEquals this.status 'pending'}}
+                                <div class="dropdown">
+                                    <button class="btn btn-secondary dropdown-toggle" type="button"
+                                        id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
+                                        aria-expanded="false">
+                                        {{this.status}}
+                                    </button>
+                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                        <a onclick="changeOrderStatus('{{this._id}}','placed')" class="dropdown-item"
+                                            href="#">Placed</a>
+                                        <a onclick="changeOrderStatus('{{this._id}}','shipped')" class="dropdown-item"
+                                            href="#">Shipped</a>
+                                        <a onclick="changeOrderStatus('{{this._id}}','outfordelivery')"
+                                            class="dropdown-item" href="#">Out For Delivery</a>
+                                        <a onclick="changeOrderStatus('{{this._id}}','delivered')" class="dropdown-item"
+                                            href="#">Delivered</a>
+                                    </div>
+                                </div>
+                                {{/ifEquals}}
+                                {{#ifEquals this.status 'placed'}}
+                                <div class="dropdown">
+                                    <button class="btn btn-secondary dropdown-toggle" type="button"
+                                        id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
+                                        aria-expanded="false">
+                                        {{this.status}}
+                                    </button>
+                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                        <a onclick="changeOrderStatus('{{this._id}}','shipped')" class="dropdown-item"
+                                            href="#">Shipped</a>
+                                        <a onclick="changeOrderStatus('{{this._id}}','outfordelivery')"
+                                            class="dropdown-item" href="#">Out For Delivery</a>
+                                        <a onclick="changeOrderStatus('{{this._id}}','delivered')" class="dropdown-item"
+                                            href="#">Delivered</a>
+                                    </div>
+                                </div>
+                                {{/ifEquals}}
+                                {{#ifEquals this.status 'shipped'}}
+                                <div class="dropdown">
+                                    <button class="btn btn-secondary dropdown-toggle" type="button"
+                                        id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
+                                        aria-expanded="false">
+                                        {{this.status}}
+                                    </button>
+                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                        <a onclick="changeOrderStatus('{{this._id}}','outfordelivery')"
+                                            class="dropdown-item" href="#">Out For Delivery</a>
+                                        <a onclick="changeOrderStatus('{{this._id}}','delivered')" class="dropdown-item"
+                                            href="#">Delivered</a>
+                                    </div>
+                                </div>
+                                {{/ifEquals}}
+                                {{#ifEquals this.status 'outfordelivery'}}
+                                <div class="dropdown">
+                                    <button class="btn btn-secondary dropdown-toggle" type="button"
+                                        id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
+                                        aria-expanded="false">
+                                        {{this.status}}
+                                    </button>
+                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                        <a onclick="changeOrderStatus('{{this._id}}','delivered')" class="dropdown-item"
+                                            href="#">Delivered</a>
+                                    </div>
+                                </div>
+                                {{/ifEquals}}
+                                {{#ifEquals this.status 'delivered'}}
+                                {{this.status}}
+                                {{/ifEquals}}
 
-<!DOCTYPE html>
+                            </td>
+                            {{/unlessEquals}}
+
+                        </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function () {
+        $('#exampleOrderAdmin').DataTable({
+            "order": [[0, "desc"]],
+            "columnDefs": [
+                {
+                    "targets": 0,
+                    "type": "date-eu"
+                },
+                {
+                    target: 6,
+                    visible: false,
+                }
+            ],
+            dom: 'Bfrtip',
+            buttons: [
+                {
+                    extend: 'excel',
+                    text: 'Excel',
+                    className: 'btn btn-default',
+                    exportOptions: {
+                        columns: ':not(.notExport)'
+                    }
+                },
+                {
+                    extend: 'pdf',
+                    text: 'PDF',
+                    className: 'btn btn-default',
+                    exportOptions: {
+                        columns: ':not(.notExport)'
+                    }
+                }
+            ],
+            responsive: {
+                details: {
+                    display: $.fn.dataTable.Responsive.display.modal({
+                        header: function (row) {
+                            var data = row.data();
+                            return 'Details for ' + data[0] + ' ' + data[1];
+                        }
+                    }),
+                    renderer: $.fn.dataTable.Responsive.renderer.tableAll({
+                        tableClass: 'table'
+                    })
+                }
+            },
+        });
+    });
+
+    function changeOrderStatus(orderId, status) {
+        $.ajax({
+            url: '/admin/orders/change-order-status',
+            data: {
+                order: orderId,
+                status: status,
+            },
+            method: 'post',
+            success: (response) => {
+                location.reload()
+            }
+        })
+    }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{{!-- ///////////////////////////////////////////////////////// --}}
+{{!-- <!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -53,6 +210,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
     <link rel="stylesheet" href="/stylesheets/orders.css" />
+    <link rel='stylesheet' href='/stylesheets/styles.css' />
     <!-- CSS only -->
     <script src="https://code.jquery.com/jquery-3.6.1.js"
         integrity="sha256-3zlB5s2uwoUzrXK3BT7AX3FyvojsraNFxCc2vC/7pNI=" crossorigin="anonymous"></script>
@@ -62,14 +220,17 @@
 </head>
 
 <body>
+  {{>admin_sidebar}}
     <p class="orders">ORDERS</p>
+    <div class="width-tab" style="margin-left: 12rem;">
     <table class="table table-borderless order-table m-5" style="border: 1px solid #000" id="table_id" class="display">
         <thead>
             <tr>
-                <th scope="col">Image</th>
-                <th scope="col">Name</th>
-                <th scope="col">Price</th>
+                
                 <th scope="col">Date</th>
+                <th scope="col">Name</th>
+                <th scope="col">Address</th>
+                <th scope="col">Phone</th>
                 <th scope="col">Payment</th>
                 <th scope="col">Status</th>
                 <th scope="col">Action</th>
@@ -78,41 +239,42 @@
         <tbody>
 			{{#each orders}}
             <tr>
-                <th scope="row ">
-                    <img src="/product-images/{{this._id}}.jpg" alt="" style="width: 10px; height: 10px" />
-                </th>
-                <td>{{this.user.username}}</td>
-                <td>${{this.totalAmount}}</td>
+                
+               
+                <td>{{this.deliveryDetails.date}}</td>
+                {{#ifCond this.totalAmount '<' this.subTotal}}
+                <td><del class="mx-2">₹{{this.subTotal}}</del>₹{{this.totalAmount}}</td>
+                {{else}}
+                <td>₹{{this.subTotal}}</td>
+                {{/ifCond}}
                 <td>{{this.date}}</td>
-                <td>{{this.paymentMethod}}</td>
-                <td>{{this.status}}</td>
-                <td><button>Cancel</button></td>
+                <td>{{this.paymentMethod}}</td> 
+                <td><select id="status{{this.productDetails._id}}" onchange="changeStatus('{{this._id}}','{{this.productDetails._id}}')"
+  {{#ifEquals this.status "cancelled"}} disabled {{/ifEquals }} class="form-select" aria-label="Default select example">
+  <option selected>
+    {{#ifEquals this.status "cancelled"}}
+    Product Cancelled
+    {{else}}
+    Change transit
+    {{/ifEquals}}
+  </option>
+  <option value="Order Placed">Order placed</option>
+  <option value="Dispatched">Dispatched</option>
+  <option value="On Transist">On Transist</option>
+  <option value="Out for Delivery">Out for Delivery</option>
+  <option value="Delivered">Delivered</option>
+</select></td>
+                <td> {{#ifEquals this.products.status "cancelled"}}
+                    🚫 {{else}}
+                <a href="/order/cancel/{{this._id}}/{{this.productDetails._id}}" class="btn">Cancel</a>
+                {{/ifEquals}} </td>
+                <td><a href="/admin/order/details/{{this._id}}">Details</a></td>
             </tr>
-            {{!-- <tr>
-                <th scope="row">
-                    <img src="" alt="" style="width: 10px; height: 10px" />
-                </th>
-                <td>dav</td>
-                <td>$45</td>
-                <td>06/05/2022</td>
-                <td>COD</td>
-                <td>Completed</td>
-                <td><button>Cancel</button></td>
-            </tr>
-            <tr>
-                <th scope="row">
-                    <img src="" alt="" style="width: 10px; height: 10px" />
-                </th>
-                <td>Otto</td>
-                <td>$45</td>
-                <td>06/05/2022</td>
-                <td>COD</td>
-                <td>Completed</td>
-                <td><button>Cancel</button></td>
-            </tr> --}}
+            
 			{{/each}}
         </tbody>
     </table>
+    </div>
 
     <!-- JavaScript Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"
@@ -120,11 +282,49 @@
     </script>
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.js">
     </script>
+    <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.print.min.js"></script>
 
 </body>
 <script>
-    $(document).ready( function () {
-    $('#table_id').DataTable();
+    $(document).ready(function() {
+    $('#table_id').DataTable( {
+        dom: 'Bfrtip',
+        buttons: [
+            'copy', 'csv', 'excel', 'pdf', 'print'
+        ]
+    } );
 } );
 </script>
-</html>
+</html> 
+
+
+
+<script>
+  function changeStatus(orderId, productId) {
+    console.log(orderId, productId)
+    let val = $(`#status${productId}`).val()
+    console.log(val)
+    $.ajax({
+      type: "POST",
+      url: "/admin/order/changeStatus",
+      data: {
+        orderId: orderId,
+        productId: productId, 
+        status: val,
+      },
+      success: function (data) {
+        console.log('success')
+        $(`#${productId}`).text(val)
+      },
+      error: function (error) {
+        console.log(error)
+      }
+    })
+  }
+</script> --}}

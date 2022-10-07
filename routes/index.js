@@ -2,6 +2,7 @@ const {
   response
 } = require('express');
 var express = require('express');
+var paypal = require('../public/javascripts/paypal')
 
 const {
   getAllCategories
@@ -32,7 +33,14 @@ const {
   getAddress,
   getAddressById,
   addCheckoutAddress,
+  updateprofile,
+  getUserDetails,
+  validateCoupon,
+  addCoupon,
+  getDeleteAddress,
+  editAddress,
 } = require('../helpers/user-helper');
+const { payment } = require('paypal-rest-sdk');
 var router = express.Router();
 
 const most = [{
@@ -207,17 +215,29 @@ function verifyLogin(req, res, next) {
 }
 
 router.get('/addToCart/:id', verifyLogin, (req, res) => {
-  addToCart(req.session.user, req.params.id).then(() => {
-    console.log("added to cart");
-    res.redirect('/cart');
+  addToCart(req.session.user, req.params.id).then(() => {  
+    // console.log("added to cart");
+    res.status(200).json(true);
+    // res.redirect('/shop')
   })
 })
 
+
+router.get('/addToWishlist/:id', verifyLogin, (req, res) => {
+  addToCart(req.session.user, req.params.id).then(() => {  
+    // console.log("added to cart");
+    res.status(200).json(true);
+    // res.redirect('/shop')
+  })
+})
+
+
+
 router.get('/cart', verifyLogin, (req, res) => {
   getCart(req.session.user._id).then((data) => {
-    getTotalAmount(req.session.user._id).then((total) => {
+    getTotalAmount(req.session.user._id).then((total) => {  
 
-      console.log(data);
+      // console.log(total);
       // console.log(data[0].cartItems)
       res.render('user/cart', {
         data: data,
@@ -237,7 +257,7 @@ router.post('/changeQuantity', verifyLogin, (req, res) => {
   changeCartQuantity(cart, product, count).then((data) => {
     getTotalAmount(user).then((total) => {
       data.total = total
-      console.log(data);
+      // console.log(data);
       res.status(200).json(data)
     })
   })
@@ -260,8 +280,8 @@ router.post('/removeFromCart', (req, res) => {
 router.get('/checkout', (req, res) => {
   getTotalAmount(req.session.user._id).then((total) => {
     getAddress(req.session.user._id).then((address) => {
-      console.log(address);
-      console.log(total);
+      // console.log(address);
+      // console.log(total);
       res.render('user/checkout', {
         total: total,
         user: req.session.user,
@@ -286,7 +306,7 @@ router.get('/checkout', (req, res) => {
 
 router.get('/orders', (req, res) => {
   getOrders(req.session.user._id).then((orders) => {
-    console.log(orders)
+    // console.log(orders)
     res.render('user/orders', {
       orders: orders
     })
@@ -295,7 +315,7 @@ router.get('/orders', (req, res) => {
 
 router.get('/order/details/:id', (req, res) => {
   getOrderDetails(req.params.id).then((orders) => {
-    console.log("Product details : ", orders)
+    // console.log("Product details : ", orders)
     res.render('user/order-details', {
       orderDetails: orders
     })
@@ -325,7 +345,7 @@ router.get('/categories/:categoryId', (req, res) => {
 
 router.get('/logout', verifyLogin, (req, res) => {
   req.session.destroy();
-  res.redirect('/');
+  res.redirect('/');  
 });
 
 router.get('/success', verifyLogin, (req, res) => {
@@ -340,7 +360,7 @@ router.get("/address/add", (req, res) => {
 
 
 router.post("/address/add", (req, res) => {
-  let user = req.session.user
+  // let user = req.session.user
   console.log("in address post route")
   addAddress(req.body, user._id).then((address) => {
     res.redirect("/checkout");
@@ -348,8 +368,9 @@ router.post("/address/add", (req, res) => {
 });
 
 router.post("/address", verifyLogin, (req, res) => {
-  console.log(req.body)
+  // console.log(req.body)
   req.session.address = req.body.address
+  console.log("og gokul",req.session.address)
   res.redirect("/payment");
 })
 
@@ -361,43 +382,78 @@ router.get("/payment", verifyLogin, (req, res) => {
 })
 
 
+
 router.post("/checkout", verifyLogin, async (req, res) => {
-  console.log(req.body);
+  // console.log(req.body);
   let user = req.session.user ? req.session.user : null;
   let addrs = req.session.address ? req.session.address : null;
+  
   //getting the address and adding it into order address collection to make it immutable.
-  console.log("user : ", user);
-  console.log("addrs : ", addrs);
+  // console.log("user : ", user);
+  // console.log("addrs : ", addrs);
   let address = await getAddressById(addrs);
-  console.log("address : ", address);
-  let orderAddress = await addCheckoutAddress(address);
-  console.log("orderaddress : ", orderAddress);
-
+  console.log("myadress",address);
+  // console.log("address : ", address);
+  // let orderAddress = await addCheckoutAddress(address);
+  // console.log("orderaddress : ", orderAddress);
   // fetching product details and total amount
   let products = await getCartProdutDetails(user._id);
-  console.log("products is ", products)
+  // console.log("products is ", products)
   // let orderProducts = await addOrderProducts(user.userId, products[0])
   // console.log("orderProducts is : ", orderProducts);
   let total = await getTotalAmount(user._id);
+  console.log(typeof total,'this is a number');
   const data = {
-    userId: user._id,
-    addressId: orderAddress._id,
-    paymentMethod: req.body.payment,
+    username: address.name,
+    phone: address.phone,
+    address: address.houseName+" "+address.postOffice,
+    payment:req.body.payment
   };
   placeOrder(data, products, total).then((data) => {
-    if (req.body.payment == 'Cash On Delivery') {
+    // console.log(req.body.payment)
+    if (req.body.payment == 'Cash On Delivery') {  
       res.json({
-        codSuccess: true
+        success: true
       })
       res.render('user/placed');
-    } else if (req.body.payment == 'razor') {
-      console.log("in razor pay router", data)
+
+    } else if (req.body.payment == 'paypal') { 
+      res.json({
+        success: true
+      })
+    } else {
+      // console.log("in razor pay router", data)
       userHelper.generateRazorpay(data.insertedId, total).then((response) => {
         res.json(response);
       })
     }
   });
 }, );
+router.post("/api/orders", async (req, res) => {
+  try {
+    let user = req.session.user ? req.session.user : null;
+    let total = await getTotalAmount(user._id);
+    console.log(total);
+    const order = await paypal.createOrder(total.total);
+    res.status(200).json(order);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+router.post("/api/orders/:orderID/capture", async (req, res) => {
+  const {
+    orderID
+  } = req.params;
+  // console.log("Order id is : ",orderID)
+  try {
+    const captureData = await paypal.capturePayment(orderID);
+    res.json(captureData);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
 
 
 router.post('/verifyPayment', (req, res) => {
@@ -410,39 +466,112 @@ router.post('/verifyPayment', (req, res) => {
       })
     })
   }).catch((error) => {
-      console.log('big error',error);
-      res.json({
-        status: false,
-        errormsg: '' 
-      })
+    console.log('big error', error);
+    res.json({
+      status: false,
+      errormsg: ''
     })
+  })
 })
 
 
-router.get('/account',verifyLogin, (req, res) => {
-res.render('partials/user')
+router.get('/account', verifyLogin, (req, res) => {
+  let users = req.session.user;
+  let body = req.body;
+  res.render('user/dashboard', {
+    users: users,
+    body: body
+  })
 })
 
 
-router.get('/dashboard', (req, res) => {
-  res.render('user/dashboard')
+router.get('/dashboard',verifyLogin, (req, res) => {
+  let users = req.session.user;
+  let body = req.body;
+  getAddress(req.session.user._id).then((address) => {
+    console.log(address);
+    res.render('user/dashboard', {
+      address: address,
+      users: users,
+      body: body,
+    })
+  })
 })
-router.get('/user-orders', (req, res) => {
-  res.render('user/user-order')
+
+
+
+router.get('/user-orders', async (req, res) => {
+  let orders = await getOrders(req.session.user._id)
+  res.render('user/user-order', {
+    orders: orders 
+  })
 });
 
-var currentTime = new Date();
-
-var currentOffset = currentTime.getTimezoneOffset();
-
-var ISTOffset = 330; // IST offset UTC +5:30 
-
-var ISTTime = new Date(currentTime.getTime() + (ISTOffset + currentOffset) * 60000);
-
-var hoursIST = ISTTime.getHours()
-var minutesIST = ISTTime.getMinutes()
+router.get('/user-cart', async (req, res) => {
+  let orders = await getCart(req.session.user._id)
+  let total = await getTotalAmount(req.session.user._id)
+  res.render('user/user-cart', {
+    orders: orders,
+    total: total
+  })
+});  
 
 
+router.get('/edit-profile', (req, res) => {
+  let users = req.session.user
+  res.render('user/edit-profile', {
+    users: users
+  });
+})
 
-console.log(hoursIST + ":" + minutesIST)
-module.exports = router;
+
+router.post('/edit-profile/:id', (req, res) => {
+  updateprofile(req.params.id, req.body).then((result) => {
+    // console.log();
+    if (result.status) {
+      res.redirect('/');
+    } else {
+      res.send('<h1>error</h1>')
+    }
+  });
+});
+
+router.post("/coupon/apply/:couponId", async (req, res) => {
+  try{
+    let coupon = await validateCoupon(req.params.couponId.trim().toUpperCase());
+    await addCoupon(req.session.user._id, req.body.coupon_code.trim().toUpperCase(), coupon.discount)
+    res.status(200).json("Successfully applied coupon")
+  } catch(err) {
+    console.log(err)
+    res.status(404).json("Invalid coupon")
+  }
+})
+
+
+router.get("/address/delete/:id", async (req, res) => {
+  await getDeleteAddress(req.params.id)
+  res.redirect("/dashboard")
+})
+
+router.get("/address/edit/:id", async (req, res) => {
+  let address = await getAddressById(req.params.id)
+  res.render("user/edit-address", {address: address})
+})
+
+router.post("/address/edit/:id", async (req, res) => {
+  await editAddress(req.params.id, req.body)
+  res.redirect("/dashboard")
+})
+
+
+// var currentTime = new Date(); 
+// var currentOffset = currentTime.getTimezoneOffset();
+// var ISTOffset = 330; // IST offset UTC +5:30 
+// var ISTTime = new Date(currentTime.getTime() + (ISTOffset + currentOffset) * 60000);
+// var hoursIST = ISTTime.getHours()
+// var minutesIST = ISTTime.getMinutes()
+// console.log(hoursIST + ":" + minutesIST)
+
+
+
+module.exports = router; 

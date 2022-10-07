@@ -1,5 +1,5 @@
 const {
-  ObjectId
+  ObjectId, Db
 } = require('mongodb');
 const {
   PRODUCT_COLLECTION,
@@ -7,6 +7,8 @@ const {
   USER_COLLECTION,
   CATEGORY_COLLECTION,
   ORDER_COLLECTION,
+  COUPON_COLLECTION,
+  ORDER_ADDRESS_COLLECTION,
 } = require('../config/collections');
 const {
   get
@@ -33,7 +35,6 @@ module.exports = {
         .collection(PRODUCT_COLLECTION)
         .insertOne(data)
         .then((data) => {
-
           resolve(data.insertedId);
         });
     });
@@ -76,14 +77,17 @@ module.exports = {
         });
     });
   },
-  updateProductDetails: (proId, proDetails) => {
+  updateProductDetails: (proId, proDetails, price) => {
     const {
       name,
-      price,
+      pd_price,
       description,
-      category
+      categories,
+      discount = 0,
+      mrp
     } = proDetails;
     return new Promise(async (resolve, reject) => {
+      price ? price : pd_price
       get()
         .collection(PRODUCT_COLLECTION)
         .updateOne({
@@ -92,11 +96,12 @@ module.exports = {
           $set: {
             name: name,
             description: description,
-            price: price,
-            category: category,
+            pd_price: Number(pd_price),
+            price: Number(price),
+            categories: categories,
+            discount: Number(discount),
+            mrp: Number(mrp),
           },
-        }, {
-          upsert: true,
         }).then((data) => {
           resolve(data.insertedId);
         })
@@ -271,13 +276,20 @@ module.exports = {
   },
   editCategory: (data, body) => {
     return new Promise((resolve, reject) => {
+      const {
+        name,
+        description,
+        discount
+      } = body;
       get()
         .collection(CATEGORY_COLLECTION)
         .updateOne({
           _id: ObjectId(data)
         }, {
           $set: {
-            name: body.name
+            name: name,
+            description: description,
+            discount: Number(discount),
           }
         })
         .then((status) => {
@@ -298,54 +310,89 @@ module.exports = {
         });
     });
   },
-  getOrders: () => {
-    return new Promise((resolve, reject) => {
-      get()
-        .collection(ORDER_COLLECTION)
-        .aggregate([{
-            $lookup: {
-              from: USER_COLLECTION,
-              localField: "userId",
-              foreignField: "_id",
-              as: "user"
-            }
-          },
-          {
-            $unwind: "$user"
-          }
-        ]).toArray()
-        .then((data) => {
-          console.log(data);
-          resolve(data);
-        });
-    })
+  // getOrders: () => {
+  //   return new Promise(async(resolve, reject) => {
+  //    await get()
+  //       .collection(ORDER_COLLECTION)
+  //       .aggregate([{
+  //           $lookup: {
+  //             from: USER_COLLECTION,
+  //             localField: "userId",
+  //             foreignField: "_id",
+  //             as: "user"
+  //           }
+  //         },
+  //         {
+  //           $unwind: "$user"
+  //         }
+  //       ]).toArray()
+  //       .then((data) => {
+          
+  //         resolve(data);
+  //       });
+  //   })
+
+      getOrders:()=>{
+        return new Promise(async(resolve, reject) => {
+          let orders=await get().collection(ORDER_COLLECTION).find({}).sort({date:-1}).toArray();
+          resolve(orders);
+      })
   },
   getOrderDetails: (orderId) => {
-    return new Promise((resolve, reject) => {
-      console.log(orderId)
-      get().collection(ORDER_COLLECTION).aggregate([{
-            $match: {
-              _id: ObjectId(orderId)
-            }
+  return new Promise((resolve, reject) => {
+    console.log(orderId);
+    get().collection(ORDER_COLLECTION)
+      .aggregate([{
+          $match: {
+            _id: ObjectId(orderId),
           },
-          {
-            $lookup: {
-              from: USER_COLLECTION,
-              localField: "userId",
-              foreignField: "_id",
-              as: "user"
-            }
+        },
+        {
+          $lookup: {
+            from: ORDER_ADDRESS_COLLECTION,
+            localField: "deliveryDetails",
+            foreignField: "_id",
+            as: "address",
           },
-          {
-            $unwind: "$user"
-          }
-        ]).toArray()
-        .then((data) => {
-          // console.log(data)
-          resolve(data[0]);
-        })
-    })
-  },
+        },
+        {
+          $lookup: {
+            from: PRODUCT_COLLECTION,
+            localField: "products.productId",
+            foreignField: "_id",
+            as: "productDetails",
+          },
+        },
+        {
+          $lookup: {
+            from: USER_COLLECTION,
+            localField: "userId",
+            foreignField: "_id",
+            as: "user",
+          },
+        },
+        {
+          $set: {
+            date: {
+              $dateToString: {
+                format: "%d/%m/%Y -- %H:%M",
+                date: "$date",
+                timezone: "+05:30"
+              },
+            },
+          },
+        },
+        // { 
+        //   $sort: { } 
+        // } 
+      ]).toArray()
+      .then((data) => {
+        console.log('///hiiiiiiiiiiii')
+         console.log(data[0]) 
+        resolve(data[0]);
+      });
+  });
+},
   updateOrderStatus: (orderId, productId, status) => {
     return new Promise((resolve, reject) => {
       console.log('updateproduct')
@@ -357,10 +404,197 @@ module.exports = {
           'products.$.status': status
         }
       }).then((data) => {
-        console.log(data) 
-        resolve()    
+        console.log(data)
+        resolve()
       })
     })
   },
+  getCount: () => {
+    return new Promise((resolve, reject) => {
+      get()
+        .collection(USER_COLLECTION)
+        .find()
+        .count()
+        .then((users) => {
+          resolve(users);
+        });
+    });
+  },
+  getOrderCount: () => {
+    return new Promise((resolve, reject) => {
+      get().collection(ORDER_COLLECTION).find().count().then((users) => {
+        resolve(users);
+      })
+    });
+  },
+
+
+  getTotalAmountOrders: () => {
+    return new Promise(async (resolve, reject) => {
+      let total = await get().collection(ORDER_COLLECTION).aggregate([
+       
+        {
+          $project: {
+            _id: 0,
+            total: '$totalAmount'
+          }
+        },
+        {
+          $group: {
+            _id: null,
+            total: {
+              $sum: '$total'
+            }
+          }
+        }
+      ]).toArray()
+      resolve(total[0].total);
+
+    })
+  },
+  getStatsWeek: (timestamp) => {
+    return new Promise((resolve, reject) => {
+
+      console.log(timestamp);
+      timestamp = "$" + timestamp;
+      get().collection(ORDER_COLLECTION).aggregate([{
+          $sort: {
+            date: 1
+          }
+        },
+        {
+          $group: {
+            _id: {
+              $add: [{
+                  $week: "$date"
+                },
+                {
+                  $multiply: [400, {
+                    $year: "$date"
+                  }]
+                }
+              ]
+            },
+            totalAmount: {
+              $sum: "$totalAmount"
+            },
+            date: {
+              $min: "$date"
+            }
+          }
+        },
+        {
+          $sort: {
+            date: 1
+          }
+        },
+        {
+          $limit: 14,
+        }
+      ]).toArray().then((data) => {
+        console.log("this", data);
+        let date = []
+        let totalAmount = []
+        data.forEach((item) => {
+          date.push(item.date.toDateString())
+          totalAmount.push(item.totalAmount)
+        })
+        data = {
+          date: date,
+          totalAmount: totalAmount
+        }
+        console.log(data)
+        resolve(data);
+      })
+    })
+  },
+  getStatsDaily: (timestamp) => {
+    return new Promise((resolve, reject) => {
+
+      console.log(timestamp);
+      timestamp = "$" + timestamp;
+      get().collection(ORDER_COLLECTION).aggregate([{
+          $sort: {
+            date: 1
+          }
+        },
+        {
+          $group: {
+            _id: {
+              $add: [{
+                  $dayOfYear: "$date"
+                },
+                {
+                  $multiply: [400, {
+                    $year: "$date"
+                  }]
+                }
+              ]
+            },
+            totalAmount: {
+              $sum: "$totalAmount"
+            },
+            date: {
+              $min: "$date"
+            }
+          }
+        },
+        {
+          $sort: {
+            date: 1
+          }
+        },
+        {
+          $limit: 14,
+        }
+      ]).toArray().then((data) => {
+        console.log("this", data);
+        let date = []
+        let totalAmount = []
+        data.forEach((item) => {
+          date.push(item.date.toDateString())
+          totalAmount.push(item.totalAmount)
+        })
+        data = {
+          date: date,
+          totalAmount: totalAmount
+        }
+        // console.log(data)
+        resolve(data);
+      })
+    })
+  },
+  getAllCategoryProducts: (categoryId) => {
+    return new Promise((resolve, reject) => { 
+      get().collection(PRODUCT_COLLECTION).find({categories : ObjectId(categoryId)}).toArray().then((category) => {
+        resolve(category)
+      })
+    })
+  },
+  editCategoryDiscount: (productId, price , discount) => {
+    return new Promise((resolve, reject) => {
+      get().collection(PRODUCT_COLLECTION).updateMany({ 
+        _id: ObjectId(productId)
+      },{$set: {
+        price: price,
+        discount: discount,
+      }})
+    })
+  },
+  addCoupon: (body) => {
+    return new Promise((resolve, reject) => {
+      get().collection(COUPON_COLLECTION).insertOne(body).then(() => {
+        resolve()
+      })
+    })
+  },
+  getAllCoupon: () => {
+    return new Promise((resolve, reject) => {
+      get().collection(COUPON_COLLECTION).find().toArray().then((coupon) => {
+        resolve(coupon)
+      })
+    })
+  }
+
 
 };
