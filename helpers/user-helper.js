@@ -6,6 +6,7 @@ const {
   ADDRESS_COLLECTION,
   ORDER_ADDRESS_COLLECTION,
   COUPON_COLLECTION,
+  WISHLIST_COLLECTION,
 } = require('../config/collections');
 
 
@@ -272,8 +273,6 @@ module.exports = {
       }
     });
   },
-
-
   
   getCart: (userId) => {
     console.log(userId);
@@ -355,6 +354,96 @@ module.exports = {
         });
     })
   },
+  addToWishlist: ( userId,proId) => {
+    console.log("kerunnund",proId, userId)
+        let proObj = {
+            item: ObjectId(proId)
+        }
+        return new Promise(async (resolve, reject) => {
+            let userWishlist = await get().collection(WISHLIST_COLLECTION).findOne({ user: ObjectId(userId) })
+            if (userWishlist) {
+
+                let prodExist = userWishlist.products.findIndex(products => products.item == proId)
+
+                if (prodExist != -1) {
+                    get().collection(WISHLIST_COLLECTION)
+                        .updateOne({ user: ObjectId(userId) },
+                            {
+                                $pull: { products: proObj }
+                            }
+                        ).then((response) => {
+                            msg = "removed"
+                            resolve(msg)
+                        })
+                } else {
+                    get().collection(WISHLIST_COLLECTION)
+                        .updateOne({ user: ObjectId(userId) },
+                            {
+                                $push: { products: proObj }
+                            }
+                        ).then((response) => {
+                          msg="added"
+                            resolve(msg)
+                        })
+                }
+                // db.get().collection(collection.WISHLIST_COLLECTION)
+                //     .updateOne({ user: objectId(userId) },
+                //         {
+                //             $push: { products: objectId(proId) }
+                //         }
+                //     ).then((response) => {
+                //         resolve()
+                //     })
+            } else {
+                let wishlistObj = {
+                    user: ObjectId(userId),
+                    products: [proObj]
+                }
+                console.log("wishlist created")
+                get().collection(WISHLIST_COLLECTION).insertOne(wishlistObj).then((response) => {
+                    resolve()
+                })
+            }
+        })
+    },
+     getWishlistedProducts: (userId) => {
+        return new Promise(async (resolve, reject) => {
+            let wishedItems = await get().collection(collection.WISHLIST_COLLECTION).aggregate([
+                {
+                    $match: { user: ObjectId(userId) }
+                },
+                {
+                    $unwind: '$products'
+                },
+                {
+                    $project: {
+                        item: '$products.item',
+                    }
+                },
+                {
+                    $lookup: {
+                        from: collection.PRODUCT_COLLECTION,
+                        localField: 'item',
+                        foreignField: '_id',
+                        as: 'product'
+                    }
+                },
+                {
+                    $project: {
+                        item: 1, products: { $arrayElemAt: ['$product', 0] }
+                    }
+                }
+            ]).toArray()
+            resolve(wishedItems)
+        })
+    },
+
+
+
+
+
+
+
   getTotalAmount: (userId) => {
     console.log(userId);
     return new Promise((resolve, reject) => {
@@ -497,15 +586,15 @@ module.exports = {
   // },
   placeOrder: (order, products, total) => {
     return new Promise((resolve, reject) => {
-      console.log(order, products, total)
-      let status = order.paymentMethod === 'cod' ? 'placed' : 'pending'
+      // console.log(order, products, total)
+      let status = 'placed'
       let orderObj = {
         deliveryDetails: {
           name: order.username,
           phone: order.phone,
           address: order.address,
         },
-        userId: ObjectId(order.userId),
+        userId: ObjectId(order.id),
         paymentMethod: order.payment,
         products: products,
         subTotal : total.total,
@@ -517,14 +606,15 @@ module.exports = {
       }
       get().collection(ORDER_COLLECTION).insertOne(orderObj).then((cart) => {
         get().collection(CART_COLLECTION).deleteOne({              
-          userId: ObjectId(order.userId)
+          userId: ObjectId(order.id)
         }).then((response) => {
           resolve(cart)
         })
       })
     })
   },
-  getOrders: (userId) => {   
+  getOrders: (userId) => {  
+    // console.log("useruseruseruser",userId) 
     return new Promise((resolve, reject) => {
       get()
         .collection(ORDER_COLLECTION)
@@ -611,6 +701,13 @@ module.exports = {
       })
     })
   },
+   getAllOrders: (userId) => {
+        return new Promise(async (resolve, reject) => {
+            let orders = await get().collection(ORDER_COLLECTION).find({userId: ObjectId(userId)}).toArray()
+            console.log("heslin",userId)
+            resolve(orders)
+        })
+    },
   getCategory: (categoryId) => {
     return new Promise((resolve, reject) => {
       get()

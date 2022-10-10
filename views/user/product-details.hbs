@@ -5,7 +5,7 @@
          <img src='/images/heart-svgrepo-com.svg' alt='search' class='heart' />
      </a> --}}
      <!-- Product section-->
-    
+
      {{#product}}
      <section class="py-5">
          <div class="container px-4 px-lg-5 my-5">
@@ -35,7 +35,7 @@
                              <i class="bi-cart-fill me-1"></i>
                              <span>Add to cart</span>
                          </button>
-                          <button class="btn btn-outline-dark flex-shrink-0 ml-4" onclick="addToWishlist('{{this._id}}')"
+                         <button class="btn btn-outline-dark flex-shrink-0 ml-4" id="bttn" onclick="addToWishlist('{{this._id}}')"
                              type="button">
                              <i class="bi-cart-fill me-1"></i>
                              <span>Add to Wishlist</span>
@@ -158,22 +158,36 @@
          </div>
      </section>
 
-     <script src="https://code.jquery.com/jquery-1.12.4.min.js"
-         integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ" crossorigin="anonymous">
-     </script>
 
-     <script src="/javascripts/zoomsl.min.js"></script>
+
+
+
+
+
+
+
+
+     <!-- Footer-->
+     {{> footer}}
+     <!-- Bootstrap core JS-->
+     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+     <!-- Core theme JS-->
+     <script src="/javascripts/productjs.js"></script>
+
+
+     {{/product}}
+<style>
+
+
+    .change{
+        background-color: rgb(201, 7, 7);
+    }
+
+</style>
 
      <script>
-         $(document).ready(function () {
-             $("#image").imagezoomsl()
-         })
-     </script>
-     <link rel="stylesheet" type="text/css"
-         href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
-     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
-     </head>
-     <script>
+
+        
          function addToCart(productId) {
              toastr.options = {
                  "closeButton": true,
@@ -200,11 +214,12 @@
                  }
              })
          }
-     </script>
 
-<script>
 
-function addToWishlist(productId) {
+         function addToWishlist(productId) {
+                      const buttons=document.getElementById("bttn");
+        buttons.classList.toggle("change");
+
              toastr.options = {
                  "closeButton": true,
                  "newestOnTop": false,
@@ -222,39 +237,25 @@ function addToWishlist(productId) {
                  "hideMethod": "fadeOut"
              }
              $.ajax({
-                 url: `/addtoWishlist/${productId}`,
-                 data: {},
-                 method: "GET",
-                 success: function () {
-                     toastr.success("Added to Wishlist!");
+
+                 url: "/addToWishlist",
+                 data: {
+                     id: productId
+                 },
+                 method: "post",
+                 success: function (res) {
+                    console.log(res)
+                     if (res == "added"){
+
+                     toastr.success("Removed from Wishlist!");
+                     }
+                     else{
+                        toastr.success("Added to Wishlist!");
+                        
+                     }
+
                  }
              })
          }
-
-
-
-
-
-
-
-
-
-
-</script>
-
-
-
-
-
-
-
-         
-     <!-- Footer-->
-     {{> footer}}
-     <!-- Bootstrap core JS-->
-     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-     <!-- Core theme JS-->
-     <script src="/javascripts/productjs.js"></script>
-
-    
-     {{/product}}
+           
+     </script>

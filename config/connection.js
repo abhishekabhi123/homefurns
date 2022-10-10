@@ -1,10 +1,12 @@
 const { MongoClient } = require("mongodb");
+require('dotenv').config()
 
 const state = {
   db: null,
 };
 module.exports.connect = (done) => {
-  const url = "mongodb://localhost:27017";
+  const url = process.env.MONGODB_CONNECT;
+  console.log("this is vishnu",url);
   const dbName = "Home";
 
   MongoClient.connect(url, (err, data) => {

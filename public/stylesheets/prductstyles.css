@@ -11293,3 +11293,14 @@ textarea.form-control-lg {
     display: none !important;
   }
 }
+.toast-message{
+  color: #fff ;
+  background: #20c997;
+  height: 100%;
+  width: 100%;
+  margin: 0 !important;
+}
+
+.toast-success{
+  background: #20c997;
+}

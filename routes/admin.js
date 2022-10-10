@@ -32,6 +32,7 @@ const {
   addCoupon,
   getAllCoupon,
   getStatsCategory,
+  changeOrderStatus,
   
 } = require('../helpers/admin-helper');
 const { getTotalAmount } = require('../helpers/user-helper');
@@ -62,9 +63,9 @@ router.post('/login', (req, res) => {
   });
 });
 
-// router.use((req, res, next) => {
-//   req.session.adminLoggedIn ? next() : res.redirect('/admin/login');
-// });
+router.use((req, res, next) => {
+  req.session.adminLoggedIn ? next() : res.redirect('/admin/login');
+});
 
 /* GET home page. */
 router.get('/',async (req, res) => {
@@ -296,15 +297,10 @@ router.get('/order/details/:id', (req, res) => {
   })
 })
 
-router.post('/order/changeStatus', (req, res) => {
-  const {
-    orderId,
-    productId,
-    status 
-  } = req.body
-  // console.log(orderId, productId, status)
-  updateOrderStatus(orderId, productId, status).then((orders) => {
-    res.status(200).send("success")
+router.post('/order/change-order-status', (req, res) => {
+  console.log("toommy",req.body)
+   changeOrderStatus(req.body).then((response) => {
+    res.json(response)
   })
 })
 

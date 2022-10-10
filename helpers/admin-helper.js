@@ -594,7 +594,19 @@ module.exports = {
         resolve(coupon)
       })
     })
-  }
+  },
+    changeOrderStatus: (details) => {
+      console.log("orderrr",details.order)
+        return new Promise((resolve, reject) => {
+            get().collection(ORDER_COLLECTION).updateOne({ _id: ObjectId(details.order) }, {
+                $set: {
+                    paymentStatus: details.status
+                }
+            }).then((response) => {
+                resolve(response)
+            })
+        })
+    },
 
 
 };

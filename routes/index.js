@@ -39,6 +39,8 @@ const {
   addCoupon,
   getDeleteAddress,
   editAddress,
+  addToWishlist,
+  getAllOrders,
 } = require('../helpers/user-helper');
 const { payment } = require('paypal-rest-sdk');
 var router = express.Router();
@@ -223,10 +225,12 @@ router.get('/addToCart/:id', verifyLogin, (req, res) => {
 })
 
 
-router.get('/addToWishlist/:id', verifyLogin, (req, res) => {
-  addToCart(req.session.user, req.params.id).then(() => {  
+router.post('/addToWishlist', verifyLogin, (req, res) => {
+  console.log("haaaaaaaaaaaaaaaa",req.body.id)
+  addToWishlist(req.session.user._id, req.body.id).then((response) => {  
     // console.log("added to cart");
-    res.status(200).json(true);
+    
+    res.status(200).json(response);
     // res.redirect('/shop')
   })
 })
@@ -306,7 +310,7 @@ router.get('/checkout', (req, res) => {
 
 router.get('/orders', (req, res) => {
   getOrders(req.session.user._id).then((orders) => {
-    // console.log(orders)
+    console.log("here",orders)
     res.render('user/orders', {
       orders: orders
     })
@@ -407,8 +411,11 @@ router.post("/checkout", verifyLogin, async (req, res) => {
     username: address.name,
     phone: address.phone,
     address: address.houseName+" "+address.postOffice,
-    payment:req.body.payment
+    payment:req.body.payment,
+    id:user._id,
   };
+
+
   placeOrder(data, products, total).then((data) => {
     // console.log(req.body.payment)
     if (req.body.payment == 'Cash On Delivery') {  
@@ -563,6 +570,9 @@ router.post("/address/edit/:id", async (req, res) => {
   res.redirect("/dashboard")
 })
 
+router.get("/test",(req, res) => {
+  res.render('user/test')
+})
 
 // var currentTime = new Date(); 
 // var currentOffset = currentTime.getTimezoneOffset();
