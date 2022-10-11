@@ -238,6 +238,7 @@ router.post('/addToWishlist', verifyLogin, (req, res) => {
 
 
 router.get('/cart', verifyLogin, (req, res) => {
+  try{
   getCart(req.session.user._id).then((data) => {
     getTotalAmount(req.session.user._id).then((total) => {  
 
@@ -248,8 +249,16 @@ router.get('/cart', verifyLogin, (req, res) => {
         total: total,
         user: req.session.user
       });
-    })
-  })
+    }).catch((err) => {
+      console.log(err);
+    });
+  }).catch((err) => {
+      console.log(err);
+    });
+}
+catch(err) {
+  console.log(err)
+}
 })
 router.post('/changeQuantity', verifyLogin, (req, res) => {
   const {
@@ -374,7 +383,7 @@ router.post("/address/add", (req, res) => {
 router.post("/address", verifyLogin, (req, res) => {
   // console.log(req.body)
   req.session.address = req.body.address
-  console.log("og gokul",req.session.address)
+  // console.log("og gokul",req.session.address)
   res.redirect("/payment");
 })
 
@@ -396,7 +405,7 @@ router.post("/checkout", verifyLogin, async (req, res) => {
   // console.log("user : ", user);
   // console.log("addrs : ", addrs);
   let address = await getAddressById(addrs);
-  console.log("myadress",address);
+  // console.log("myadress",address);
   // console.log("address : ", address);
   // let orderAddress = await addCheckoutAddress(address);
   // console.log("orderaddress : ", orderAddress);
