@@ -192,8 +192,8 @@ module.exports = {
     });
   },
   addToCart: (userId, productId) => {
-    console.log('userId', userId._id, 'productId', productId);
-    console.log('userId', typeof userId, 'productId', typeof productId);
+    // console.log('userId', userId._id, 'productId', productId);
+    // console.log('userId', typeof userId, 'productId', typeof productId);
     return new Promise((resolve, reject) => {
       try {
         productObj = {
@@ -207,7 +207,7 @@ module.exports = {
             userId: ObjectId(userId._id)
           })
           .then((cart) => {
-            console.log(cart);
+            // console.log(cart);
             if (cart) {
               let state = false;
               let data = cart.cartItems.forEach((product) => {
@@ -215,8 +215,10 @@ module.exports = {
                 if (product.productId.toString() == ObjectId(productId)) {
                   return state = true
                 }
-              });
-              console.log(data);
+            }).catch((error) => { 
+              console.log(error);
+            });
+              // console.log(data);
               if (state == true) {
 
                 get()
@@ -232,7 +234,9 @@ module.exports = {
                   .then((status) => {
 
                     resolve(status);
-                  });
+                  }).catch((error) => { 
+              console.log(error);
+            });
               } else {
                 get()
                   .collection(CART_COLLECTION)
@@ -247,7 +251,9 @@ module.exports = {
                   })
                   .then((status) => {
                     resolve(status);
-                  });
+                  }).catch((error) => { 
+              console.log(error);
+            });
               }
             } else {
               get()
@@ -265,7 +271,9 @@ module.exports = {
                 })
                 .then((status) => {
                   resolve(status);
-                });
+                }).catch((error) => { 
+              console.log(error);
+            });
             }
           });
       } catch (error) {
