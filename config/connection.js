@@ -6,7 +6,7 @@ const state = {
 };
 module.exports.connect = (done) => {
   const url = process.env.MONGODB_CONNECT;
-  console.log("this is vishnu",url);
+  console.log(url);
   const dbName = "Home";
 
   MongoClient.connect(url, (err, data) => {
