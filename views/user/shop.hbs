@@ -92,7 +92,8 @@
                 url: `/addtocart/${productId}`,
                 data:{},
                 method: "POST",
-                success: function () {
+                success: function (res) {
+                    console.log(res);
                     toastr.success("Added to cart!");
                 }
             })
