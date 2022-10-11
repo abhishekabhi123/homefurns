@@ -216,7 +216,7 @@ function verifyLogin(req, res, next) {
   }
 }
 
-router.get('/addToCart/:id', verifyLogin, (req, res) => {
+router.post('/addToCart/:id', verifyLogin, (req, res) => {
   addToCart(req.session.user, req.params.id).then(() => {  
     // console.log("added to cart");
     res.status(200).json(true);
