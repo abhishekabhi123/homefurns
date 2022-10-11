@@ -445,7 +445,7 @@ module.exports = {
 
 
   getTotalAmount: (userId) => {
-    console.log(userId);
+    // console.log(userId);
     return new Promise((resolve, reject) => {
       try {
         get()
