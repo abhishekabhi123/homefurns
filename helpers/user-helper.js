@@ -215,9 +215,7 @@ module.exports = {
                 if (product.productId.toString() == ObjectId(productId)) {
                   return state = true
                 }
-            }).catch((error) => { 
-              console.log(error);
-            });
+            })
               // console.log(data);
               if (state == true) {
 
@@ -234,9 +232,7 @@ module.exports = {
                   .then((status) => {
 
                     resolve(status);
-                  }).catch((error) => { 
-              console.log(error);
-            });
+                  })
               } else {
                 get()
                   .collection(CART_COLLECTION)
@@ -251,9 +247,7 @@ module.exports = {
                   })
                   .then((status) => {
                     resolve(status);
-                  }).catch((error) => { 
-              console.log(error);
-            });
+                  })
               }
             } else {
               get()
@@ -271,9 +265,7 @@ module.exports = {
                 })
                 .then((status) => {
                   resolve(status);
-                }).catch((error) => { 
-              console.log(error);
-            });
+                })
             }
           });
       } catch (error) {
